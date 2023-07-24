@@ -334,7 +334,8 @@ In non-development environments, when an exception occurs, the following is a st
 {
 "type":"https://tools.ietf.org/html/rfc7231#section-6.6.1",
 "title":"An error occurred while processing your request.",
-"status":500,"traceId":"00-b644<snip>-00"
+"status":500,
+"traceId":"00-b644<snip>-00"
 }
 ```
 
