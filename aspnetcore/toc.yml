@@ -582,6 +582,8 @@ items:
                     uid: blazor/security/server/interactive-server-side-rendering
                   - name: Account confirmation and password recovery
                     uid: blazor/security/server/account-confirmation-and-password-recovery
+                  - name: QR code generation
+                    uid: blazor/security/server/qrcodes-for-authenticator-apps
                   - name: Additional scenarios
                     uid: blazor/security/server/additional-scenarios
               - name: Blazor WebAssembly
@@ -636,6 +638,12 @@ items:
                 uid: blazor/host-and-deploy/server
               - name: Blazor WebAssembly
                 uid: blazor/host-and-deploy/webassembly
+              - name: WebAssembly caching
+                items:
+                  - name: Overview
+                    uid: blazor/host-and-deploy/webassembly-caching/index
+                  - name: HTTP caching issues
+                    uid: blazor/host-and-deploy/webassembly-caching/http-caching-issues
               - name: Configure the Linker
                 uid: blazor/host-and-deploy/configure-linker
               - name: Configure the Trimmer
@@ -646,8 +654,6 @@ items:
                 uid: blazor/host-and-deploy/multiple-hosted-webassembly
           - name: Blazor with EF Core
             uid: blazor/blazor-ef-core
-          - name: HTTP caching issues
-            uid: blazor/http-caching-issues
           - name: Advanced scenarios
             uid: blazor/advanced-scenarios
       - name: Client-side development
