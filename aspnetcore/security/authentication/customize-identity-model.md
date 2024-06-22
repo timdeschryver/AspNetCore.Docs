@@ -25,7 +25,7 @@ Before examining the model, it's useful to understand how Identity works with [E
 Use one of the following approaches to add and apply Migrations:
 
 * The **Package Manager Console** (PMC) window if using Visual Studio. For more information, see [EF Core PMC tools](/ef/core/miscellaneous/cli/powershell).
-* The .NET Core CLI if using the command line. For more information, see [EF Core .NET command line tools](/ef/core/miscellaneous/cli/dotnet).
+* The .NET CLI if using the command line. For more information, see [EF Core .NET command line tools](/ef/core/miscellaneous/cli/dotnet).
 * Clicking the **Apply Migrations** button on the error page when the app is run.
 
 ASP.NET Core has a development-time error page handler. The handler can apply migrations when the app is run. Production apps typically generate SQL scripts from the migrations and deploy database changes as part of a controlled app and database deployment.
@@ -292,6 +292,8 @@ The context is used to configure the model in two ways:
 
 When overriding `OnModelCreating`, `base.OnModelCreating` should be called first; the overriding configuration should be called next. EF Core generally has a last-one-wins policy for configuration. For example, if the `ToTable` method for an entity type is called first with one table name and then again later with a different table name, the table name in the second call is used.
 
+***NOTE***: If the `DbContext` doesn't derive from `IdentityDbContext`, `AddEntityFrameworkStores` may not infer the correct POCO types for `TUserClaim`, `TUserLogin`, and `TUserToken`. If `AddEntityFrameworkStores` doesn't infer the correct POCO types, a workaround is to directly add the correct types via `services.AddScoped<IUser/RoleStore<TUser>` and `UserStore<...>>`.
+
 ### Custom user data
 
 <!--
@@ -378,8 +380,8 @@ A change to the PK column's data type after the database has been created is pro
 
 Follow these steps to change the PK type:
 
-1. If the database was created before the PK change, run `Drop-Database` (PMC) or `dotnet ef database drop` (.NET Core CLI) to delete it.
-2. After confirming deletion of the database, remove the initial migration with `Remove-Migration` (PMC) or `dotnet ef migrations remove` (.NET Core CLI).
+1. If the database was created before the PK change, run `Drop-Database` (PMC) or `dotnet ef database drop` (.NET CLI) to delete it.
+2. After confirming deletion of the database, remove the initial migration with `Remove-Migration` (PMC) or `dotnet ef migrations remove` (.NET CLI).
 3. Update the `ApplicationDbContext` class to derive from <xref:Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext%603>. Specify the new key type for `TKey`. For example, to use a `Guid` key type:
  
    ```csharp

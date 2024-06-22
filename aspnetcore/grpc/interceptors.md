@@ -1,7 +1,7 @@
 ---
 title: gRPC interceptors on .NET
 author: erni27
-ms.author: jamesnk
+ms.author: wpickett
 description: Learn how to use gRPC interceptors on .NET.
 monikerRange: '>= aspnetcore-3.1'
 ms.date: 02/26/2022
@@ -61,8 +61,8 @@ public class ClientLoggingInterceptor : Interceptor
         ClientInterceptorContext<TRequest, TResponse> context,
         AsyncUnaryCallContinuation<TRequest, TResponse> continuation)
     {
-        _logger.LogInformation($"Starting call. Type: {context.Method.Type}. " +
-            $"Method: {context.Method.Name}.");
+        _logger.LogInformation("Starting call. Type/Method: {Type} / {Method}",
+            context.Method.Type, context.Method.Name);
         return continuation(request, context);
     }
 }
@@ -176,11 +176,11 @@ gRPC server interceptors intercept incoming RPC requests. They provide access to
 The following code presents an example of an intercepting an incoming unary RPC:
 
 ```csharp
-public class ServerLoggingInterceptor : Interceptor
+public class ServerLoggerInterceptor : Interceptor
 {
     private readonly ILogger _logger;
 
-    public ServerLoggingInterceptor(ILogger<ServerLoggingInterceptor> logger)
+    public ServerLoggerInterceptor(ILogger<ServerLoggerInterceptor> logger)
     {
         _logger = logger;
     }
@@ -190,8 +190,8 @@ public class ServerLoggingInterceptor : Interceptor
         ServerCallContext context,
         UnaryServerMethod<TRequest, TResponse> continuation)
     {
-        _logger.LogInformation($"Starting receiving call. Type: {MethodType.Unary}. " +
-            $"Method: {context.Method}.");
+        _logger.LogInformation("Starting receiving call. Type/Method: {Type} / {Method}",
+            MethodType.Unary, context.Method);
         try
         {
             return await continuation(request, context);

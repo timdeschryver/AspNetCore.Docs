@@ -59,7 +59,7 @@ ASP.NET Core 3.1 introduced <xref:Microsoft.AspNetCore.Mvc.Routing.DynamicRouteV
 * The [[Compare]](xref:System.ComponentModel.DataAnnotations.CompareAttribute) attribute can be applied to properties on a Razor Page model.
 * Parameters and properties bound from the body are considered required by default. <!-- Review: How is this different from 3.1
 The validation system in .NET Core 3.0 and later treats non-nullable parameters or bound properties as if they had a [Required] attribute.
-see https://docs.microsoft.com/aspnet/core/mvc/models/validation?view=aspnetcore-3.1   
+see https://learn.microsoft.com/aspnet/core/mvc/models/validation?view=aspnetcore-3.1   
 -->
 
 ## Web API
@@ -126,7 +126,7 @@ The `InputFile` component allows reading one or more files selected by a user fo
 
 ### New `InputRadio` and `InputRadioGroup` components
 
-Blazor has built-in `InputRadio` and `InputRadioGroup` components that simplify data binding to radio button groups with integrated validation. For more information, see <xref:blazor/forms-validation>.
+Blazor has built-in `InputRadio` and `InputRadioGroup` components that simplify data binding to radio button groups with integrated validation. For more information, see <xref:blazor/forms/input-components>.
 
 ### Component virtualization
 
@@ -142,7 +142,7 @@ Use the `FocusAsync` convenience method on element references to set the UI focu
 
 ### Custom validation CSS class attributes
 
-Custom validation CSS class attributes are useful when integrating with CSS frameworks, such as Bootstrap. For more information, see <xref:blazor/forms-validation#custom-validation-css-class-attributes>.
+Custom validation CSS class attributes are useful when integrating with CSS frameworks, such as Bootstrap. For more information, see <xref:blazor/forms/validation#custom-validation-css-class-attributes>.
 
 ### IAsyncDisposable support
 
@@ -160,7 +160,7 @@ The following built-in components support display names with the `DisplayName` p
 * `InputNumber`
 * `InputSelect`
 
-For more information, see <xref:blazor/forms-validation#display-name-support>.
+For more information, see <xref:blazor/forms/index#display-name-support>.
 
 ### Catch-all route parameters
 
@@ -342,11 +342,11 @@ Prior to .NET 5.0, building and publishing a *Dockerfile* for an ASP.NET Core ap
 
 ## Authentication and authorization
 
-### Azure Active Directory authentication with Microsoft.Identity.Web
+### Microsoft Entra ID authentication with Microsoft.Identity.Web
 
-The ASP.NET Core project templates now integrate with <xref:Microsoft.Identity.Web?displayProperty=fullName> to handle authentication with [Azure Active Directory](/azure/active-directory/fundamentals/active-directory-whatis) (Azure AD). The [Microsoft.Identity.Web package](https://www.nuget.org/packages/Microsoft.Identity.Web/) provides:
+The ASP.NET Core project templates now integrate with <xref:Microsoft.Identity.Web?displayProperty=fullName> to handle authentication with [Microsoft Entra ID](/azure/active-directory/fundamentals/active-directory-whatis). The [Microsoft.Identity.Web package](https://www.nuget.org/packages/Microsoft.Identity.Web/) provides:
 
-* A better experience for authentication through Azure AD.
+* A better experience for authentication through Microsoft Entra ID.
 * An easier way to access Azure resources on behalf of your users, including [Microsoft Graph](/graph/overview). See the [Microsoft.Identity.Web sample](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2), which starts with a basic login and advances through multi-tenancy, using Azure APIs, using Microsoft Graph, and protecting your own APIs. `Microsoft.Identity.Web` is available alongside .NET 5.
 
 ### Allow anonymous access to an endpoint
