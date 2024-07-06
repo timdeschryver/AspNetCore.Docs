@@ -1,8 +1,8 @@
 ---
 title: ASP.NET Core security topics
-author: rick-anderson
+author: tdykstra
 description: Provides links to articles on authentication, authorization, and security in ASP.NET Core.
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 3/9/2022
 uid: security/index
@@ -48,3 +48,4 @@ There are more vulnerabilities that you should be aware of. For more information
 * <xref:security/authentication/identity>
 * <xref:security/authentication/identity-enable-qrcodes>
 * <xref:security/authentication/social/index> 
+* <xref:security/identity-management-solutions>

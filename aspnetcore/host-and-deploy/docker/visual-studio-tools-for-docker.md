@@ -2,7 +2,7 @@
 title: Visual Studio Container Tools with ASP.NET Core
 author: spboyer
 description: Learn how to use Visual Studio tooling and Docker for Windows to containerize an ASP.NET Core app.
-ms.author: scaddie
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 09/12/2018
 uid: host-and-deploy/docker/visual-studio-tools-for-docker
@@ -16,7 +16,7 @@ Visual Studio 2017 and later versions support building, debugging, and running c
 ## Prerequisites
 
 * [Docker for Windows](https://docs.docker.com/desktop/windows/install/)
-* [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=inline+link&utm_content=download+vs2019) with the **.NET Core cross-platform development** workload
+* [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=learn.microsoft.com&utm_campaign=inline+link&utm_content=download+vs2019) with the **.NET Core cross-platform development** workload
 
 ## Installation and setup
 
@@ -60,7 +60,7 @@ A *Dockerfile*, the recipe for creating a final Docker image, is added to the pr
 
 [!code-dockerfile[](visual-studio-tools-for-docker/samples/2.1/HelloDockerTools/Dockerfile.original?highlight=1,6,14,17)]
 
-The preceding *Dockerfile* is based on the [microsoft/dotnet](https://hub.docker.com/r/microsoft/dotnet/) image. This base image includes the ASP.NET Core runtime and NuGet packages. The packages are just-in-time (JIT) compiled to improve startup performance.
+The preceding *Dockerfile* image includes the ASP.NET Core runtime and NuGet packages. The packages are just-in-time (JIT) compiled to improve startup performance.
 
 When the new project dialog's **Configure for HTTPS** checkbox is checked, the *Dockerfile* exposes two ports. One port is used for HTTP traffic; the other port is used for HTTPS. If the checkbox isn't checked, a single port (80) is exposed for HTTP traffic.
 
@@ -70,7 +70,7 @@ When the new project dialog's **Configure for HTTPS** checkbox is checked, the *
 
 [!code-dockerfile[](visual-studio-tools-for-docker/samples/2.0/HelloDockerTools/Dockerfile?highlight=1,5,13,16)]
 
-The preceding *Dockerfile* is based on the [microsoft/aspnetcore](https://hub.docker.com/r/microsoft/aspnetcore/) image. This base image includes the ASP.NET Core NuGet packages, which are just-in-time (JIT) compiled to improve startup performance.
+The preceding *Dockerfile* image includes the ASP.NET Core NuGet packages, which are just-in-time (JIT) compiled to improve startup performance.
 
 :::moniker-end
 
@@ -82,7 +82,7 @@ Visual Studio 2017 versions 15.8 or later add an orchestration solution only whe
 
 * [Docker Compose](#docker-compose)
 * [Service Fabric](#service-fabric)
-* [Kubernetes/Helm ](https://helm.sh/)
+* [Kubernetes/Helm](https://helm.sh/)
 
 ### Docker Compose
 
@@ -237,3 +237,5 @@ There may be an expectation for the production or release image to be smaller in
 * [Troubleshoot Visual Studio development with Docker](/azure/vs-azure-tools-docker-troubleshooting-docker-errors)
 * [Visual Studio Container Tools GitHub repository](https://github.com/Microsoft/DockerTools)
 * [GC using Docker and small containers](xref:performance/memory#sc)
+* [System.IO.IOException: The configured user limit (128) on the number of inotify instances has been reached](xref:host-and-deploy/docker/index#d128)
+* [Updates to Docker images](https://andrewlock.net/exploring-the-dotnet-8-preview-updates-to-docker-images-in-dotnet-8/)

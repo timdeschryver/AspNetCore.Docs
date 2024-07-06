@@ -13,7 +13,7 @@ By [Valeriy Novytskyy](https://github.com/01binary) and [Rick Anderson](https://
 
 This tutorial demonstrates how to build an ASP.NET Core app that enables users to sign in using OAuth 2.0 with credentials from external authentication providers.
 
-[Facebook](xref:security/authentication/facebook-logins), [Twitter](xref:security/authentication/twitter-logins), [Google](xref:security/authentication/google-logins), and [Microsoft](xref:security/authentication/microsoft-logins) providers are covered in the following sections and use the starter project created in this article. Other providers are available in third-party packages such as [AspNet.Security.OAuth.Providers](https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers) and [AspNet.Security.OpenId.Providers](https://github.com/aspnet-contrib/AspNet.Security.OpenId.Providers).
+[Facebook](xref:security/authentication/facebook-logins), [Twitter](xref:security/authentication/twitter-logins), [Google](xref:security/authentication/google-logins), and [Microsoft](xref:security/authentication/microsoft-logins) providers are covered in the following sections and use the starter project created in this article. Other providers are available in third-party packages such as [OpenIddict](https://documentation.openiddict.com/guides/getting-started/integrating-with-a-remote-server-instance.html), [AspNet.Security.OAuth.Providers](https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers) and [AspNet.Security.OpenId.Providers](https://github.com/aspnet-contrib/AspNet.Security.OpenId.Providers).
 
 Enabling users to sign in with their existing credentials:
 
@@ -25,7 +25,7 @@ Enabling users to sign in with their existing credentials:
 # [Visual Studio](#tab/visual-studio)
 
 * Select the **ASP.NET Core Web App** template. Select **OK**.
-* In the **Authentication type** input,  select  **Individual User Accounts**.
+* In the **Authentication type** input,  select  **Individual Accounts**.
 
 # [Visual Studio Code / Visual Studio for Mac](#tab/visual-studio-code+visual-studio-mac)
 
@@ -97,9 +97,8 @@ To create a password and sign in using your email that you set during the sign i
 
 * Set a valid password and you can use this to sign in with your email.
 
-## Next steps
+## Additional information
 
+* [Sign in with Apple Example Integration](https://github.com/martincostello/SignInWithAppleSample)
 * See [this GitHub issue](https://github.com/dotnet/AspNetCore.Docs/issues/10563) for information on how to customize the login buttons.
-* This article introduced external authentication and explained the prerequisites required to add external logins to your ASP.NET Core app.
-* Reference provider-specific pages to configure logins for the providers required by your app.
-* You may want to persist additional data about the user and their access and refresh tokens. For more information, see <xref:security/authentication/social/additional-claims>.
+* Persist additional data about the user and their access and refresh tokens. For more information, see <xref:security/authentication/social/additional-claims>.

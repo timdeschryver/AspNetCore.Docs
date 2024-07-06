@@ -46,7 +46,7 @@ If the web app is running as an Azure service, connection string can be used to 
 ```csharp
 string connectionString = "<connection_string>";
 string containerName = "my-key-container";
-string blobName = "keys.xml"
+string blobName = "keys.xml";
 BlobContainerClient container = new BlobContainerClient(connectionString, containerName);
 
 // optional - provision the container automatically
@@ -160,7 +160,7 @@ Add-Migration AddDataProtectionKeys -Context MyKeysContext
 Update-Database -Context MyKeysContext
 ```
 
-# [.NET Core CLI](#tab/netcore-cli)
+# [.NET CLI](#tab/net-cli)
 
 Execute the following commands in a command shell:
 

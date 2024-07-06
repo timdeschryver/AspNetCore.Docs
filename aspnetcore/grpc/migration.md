@@ -3,7 +3,7 @@ title: Migrate gRPC from C-core to gRPC for .NET
 author: jamesnk
 description: Learn how to move an existing C-core based gRPC app to run on top of gRPC for .NET.
 monikerRange: '>= aspnetcore-3.0'
-ms.author: jamesnk
+ms.author: wpickett
 ms.date: 01/18/2022
 uid: grpc/migration
 ---
@@ -112,6 +112,14 @@ C-core-based apps configure HTTPS through the [Server.Ports property](https://gr
 ASP.NET Core [middleware](xref:fundamentals/middleware/index) offers similar functionalities compared to interceptors in C-core-based gRPC apps. Both are supported by ASP.NET Core gRPC apps, so there's no need to rewrite interceptors.
 
 For more information on how these features compare to each other, see [gRPC Interceptors versus Middleware](xref:grpc/interceptors#grpc-interceptors-versus-middleware).
+
+## Host gRPC in non-ASP.NET Core projects
+
+A C-core-based server can be added to any project type. gRPC for .NET server requires ASP.NET Core. ASP.NET Core is usually available because the project file specifies `Microsoft.NET.SDK.Web` as the SDK.
+
+A gRPC server can be hosted to non-ASP.NET Core projects by adding `<FrameworkReference Include="Microsoft.AspNetCore.App" />` to a project. The framework reference makes ASP.NET Core APIs available and they can be used to start an ASP.NET Core server.
+
+For more information, see [Host gRPC in non-ASP.NET Core projects](xref:grpc/aspnetcore#host-grpc-in-non-aspnet-core-projects).
 
 ## Additional resources
 

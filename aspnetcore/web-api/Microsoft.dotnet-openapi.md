@@ -3,7 +3,7 @@ title: .NET OpenAPI tool command reference and installation
 author: ryanbrandenburg
 description: Demonstrates how to use the 'Microsoft.dotnet-openapi' tool to add references to OpenAPI files.
 monikerRange: '>= aspnetcore-3.1'
-ms.author: rybrande
+ms.author: wpickett
 ms.date: 3/9/2022
 uid: web-api/Microsoft.dotnet-openapi
 ---
@@ -18,6 +18,8 @@ To install `Microsoft.dotnet-openapi`, run the following command:
 ```dotnetcli
 dotnet tool install -g Microsoft.dotnet-openapi
 ```
+
+[!INCLUDE[](~/includes/dotnet-tool-install-arch-options.md)]
 
 ## Add
 

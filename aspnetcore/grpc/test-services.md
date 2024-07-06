@@ -3,7 +3,7 @@ title: Test gRPC services in ASP.NET Core
 author: jamesnk
 description: Learn how to test gRPC services in ASP.NET Core apps.
 monikerRange: '>= aspnetcore-3.1'
-ms.author: jamesnk
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 01/01/2022
 uid: grpc/test-services
@@ -62,7 +62,7 @@ To configure a `HttpContext` during test setup, create a new instance and add it
 var httpContext = new DefaultHttpContext();
 
 var serverCallContext = TestServerCallContext.Create();
-serviceCallContext.UserState["__HttpContext"] = httpContext;
+serverCallContext.UserState["__HttpContext"] = httpContext;
 ```
 
 Execute service methods with this call context to use the configured `HttpContext` instance.
