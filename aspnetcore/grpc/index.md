@@ -3,11 +3,13 @@ title: Overview for gRPC on .NET
 author: jamesnk
 description: Learn about gRPC services with Kestrel server and the ASP.NET Core stack.
 monikerRange: '>= aspnetcore-3.0'
-ms.author: jamesnk
+ms.author: wpickett
 ms.date: 09/28/2021
 uid: grpc/index
 ---
 # Overview for gRPC on .NET
+
+[!INCLUDE[](~/includes/not-latest-version.md)]
 
 By [James Newton-King](https://twitter.com/jamesnk)
 
@@ -25,8 +27,6 @@ These benefits make gRPC ideal for:
 * Lightweight microservices where efficiency is critical.
 * Polyglot systems where multiple languages are required for development.
 * Point-to-point real-time services that need to handle streaming requests or responses.
-
-[!INCLUDE[](~/includes/gRPCazure.md)]
 
 ## C# Tooling support for `.proto` files
 
@@ -145,8 +145,6 @@ These benefits make gRPC ideal for:
 * Lightweight microservices where efficiency is critical.
 * Polyglot systems where multiple languages are required for development.
 * Point-to-point real-time services that need to handle streaming requests or responses.
-
-[!INCLUDE[](~/includes/gRPCazure.md)]
 
 ## C# Tooling support for `.proto` files
 

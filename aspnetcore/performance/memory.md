@@ -1,8 +1,8 @@
 ---
 title: Memory management and patterns in ASP.NET Core
-author: rick-anderson
+author: tdykstra
 description: Learn how memory is managed in ASP.NET Core and how the garbage collector (GC) works.
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 4/05/2019
 uid: performance/memory
@@ -30,13 +30,11 @@ When an ASP.NET Core app starts, the GC:
 
 The preceding memory allocations are done for performance reasons. The performance benefit comes from heap segments in contiguous memory.
 
-### Call GC.Collect
+### GC.Collect caveats 
 
-Calling [GC.Collect](xref:System.GC.Collect%2A) explicitly:
+In general, ASP.NET Core apps in production should **not** use [GC.Collect](xref:System.GC.Collect%2A) explicitly. Inducing garbage collections at sub-optimal times can decrease performance significantly.
 
-* Should **not** be done by production ASP.NET Core apps.
-* Is useful when investigating memory leaks.
-* When investigating, verifies the GC has removed all dangling objects from memory so memory can be measured.
+GC.Collect is useful when investigating memory leaks. Calling `GC.Collect()` triggers a blocking garbage collection cycle that tries to reclaim all objects inaccessible from managed code. It's a useful way to understand the size of the reachable live objects in the heap, and track growth of memory size over time.
 
 ## Analyzing the memory usage of an app
 
@@ -152,7 +150,7 @@ On a typical web server environment, CPU usage is more important than memory, th
 
 ### GC using Docker and small containers
 
-When multiple containerized apps are running on one machine, Workstation GC might be more preformant than Server GC. For more information, see [Running with Server GC in a Small Container](https://devblogs.microsoft.com/dotnet/running-with-server-gc-in-a-small-container-scenario-part-0/) and [Running with Server GC in a Small Container Scenario Part 1 – Hard Limit for the GC Heap](https://devblogs.microsoft.com/dotnet/running-with-server-gc-in-a-small-container-scenario-part-1-hard-limit-for-the-gc-heap/).
+When multiple containerized apps are running on one machine, Workstation GC might be more performant than Server GC. For more information, see [Running with Server GC in a Small Container](https://devblogs.microsoft.com/dotnet/running-with-server-gc-in-a-small-container-scenario-part-0/) and [Running with Server GC in a Small Container Scenario Part 1 – Hard Limit for the GC Heap](https://devblogs.microsoft.com/dotnet/running-with-server-gc-in-a-small-container-scenario-part-1-hard-limit-for-the-gc-heap/).
 
 ### Persistent object references
 
@@ -175,7 +173,7 @@ public ActionResult<string> GetStaticString()
 The preceding code:
 
 * Is an example of a typical memory leak.
-* With frequent calls, causes app memory to increases until the process crashes with an `OutOfMemory` exception.
+* With frequent calls, causes app memory to increase until the process crashes with an `OutOfMemory` exception.
 
 :::image source="memory/_static/eternal.png" alt-text="Chart showing a memory leak":::
 
@@ -212,12 +210,12 @@ The following image shows the memory profile while invoking the `fileprovider` A
 
 The preceding chart shows an obvious issue with the implementation of this class, as it keeps increasing memory usage. This is a known problem that is being tracked in [this issue](https://github.com/dotnet/aspnetcore/issues/3110).
 
-The same leak could be happen in user code, by one of the following:
+The same leak could happen in user code, by one of the following:
 
 * Not releasing the class correctly.
-* Forgetting to invoke the `Dispose`method of the dependent objects that should be disposed.
+* Forgetting to invoke the `Dispose` method of the dependent objects that should be disposed.
 
-### Large objects heap
+### Large object heap
 
 Frequent memory allocation/free cycles can fragment memory, especially when allocating large chunks of memory. Objects are allocated in contiguous blocks of memory. To mitigate fragmentation, when the GC frees memory, it tries to defragment it. This process is called **compaction**. Compaction involves moving objects. Moving large objects imposes a performance penalty. For this reason the GC creates a special memory zone for *large* objects, called the [large object heap](/dotnet/standard/garbage-collection/large-object-heap) (LOH). Objects that are greater than 85,000 bytes (approximately 83 KB) are:
 
@@ -387,7 +385,7 @@ To set up disposal of the object:
 * Encapsulate the pooled array in a disposable object.
 * Register the pooled object with [HttpContext.Response.RegisterForDispose](xref:Microsoft.AspNetCore.Http.HttpResponse.RegisterForDispose%2A).
 
-`RegisterForDispose` will take care of calling `Dispose`on the target object so that it's only released when the HTTP request is complete.
+`RegisterForDispose` will take care of calling `Dispose` on the target object so that it's only released when the HTTP request is complete.
 
 ```csharp
 private static ArrayPool<byte> _arrayPool = ArrayPool<byte>.Create();
