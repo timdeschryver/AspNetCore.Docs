@@ -2,7 +2,7 @@
 title: Use LibMan with ASP.NET Core in Visual Studio
 author: rick-anderson
 description: Learn how to use LibMan in an ASP.NET Core project with Visual Studio.
-ms.author: scaddie
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 08/20/2018
 uid: client-side/libman/libman-vs
@@ -22,7 +22,7 @@ Visual Studio has built-in support for [LibMan](xref:client-side/libman/index) i
 
 ## Prerequisites
 
-* [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=inline+link&utm_content=download+vs2019) with the **ASP.NET and web development** workload
+* [Visual Studio 2019](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=learn.microsoft.com&utm_campaign=inline+link&utm_content=download+vs2019) with the **ASP.NET and web development** workload
 
 ## Add library files
 
