@@ -3,11 +3,13 @@ title: Use gRPC in browser apps
 author: jamesnk
 description: Learn the options available to make ASP.NET Core gRPC services callable from browser apps.
 monikerRange: '>= aspnetcore-3.0'
-ms.author: jamesnk
+ms.author: wpickett
 ms.date: 08/04/2022
 uid: grpc/browser
 ---
 # Use gRPC in browser apps
+
+[!INCLUDE[](~/includes/not-latest-version.md)]
 
 By [James Newton-King](https://twitter.com/jamesnk)
 
@@ -33,7 +35,7 @@ gRPC JSON transcoding allows browser apps to call gRPC services as if they were 
 * RESTful APIs are automatically created from gRPC services by annotating the `.proto` file with HTTP metadata.
 * Allows an app to support both gRPC and JSON web APIs without duplicating the effort of building separate services for both.
 
-.NET has built-in support for creating JSON web APIs from gRPC services. For more information, see <xref:grpc/httpapi>.
+.NET has built-in support for creating JSON web APIs from gRPC services. For more information, see <xref:grpc/json-transcoding>.
 
 > [!NOTE]
 > gRPC JSON transcoding requires .NET 7 or later.
@@ -41,4 +43,4 @@ gRPC JSON transcoding allows browser apps to call gRPC services as if they were 
 ## Additional resources
 
 * <xref:grpc/grpcweb>
-* <xref:grpc/httpapi>
+* <xref:grpc/json-transcoding>
