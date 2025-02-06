@@ -140,11 +140,19 @@ The following sections demonstrate the usage of the common result helpers.
 
 :::code language="csharp" source="~/fundamentals/minimal-apis/9.0-samples/Snippets/Program.cs" id="snippet_06":::
 
+:::moniker range=">= aspnetcore-9.0"
+
 #### Internal Server Error
 
 :::code language="csharp" source="~/fundamentals/minimal-apis/9.0-samples/Snippets/Program.cs" id="snippet_07":::
 
 The preceding example returns a 500 status code.
+
+#### Problem and ValidationProblem
+
+:::code language="csharp" source="~/fundamentals/minimal-apis/9.0-samples/Snippets/Program.cs" id="snippet_12":::
+
+:::moniker-end
 
 #### Text
 
