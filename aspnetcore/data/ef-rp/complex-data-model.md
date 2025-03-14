@@ -1,8 +1,8 @@
 ---
 title: Part 5, Razor Pages with EF Core in ASP.NET Core - Data Model
-author: rick-anderson
+author: tdykstra
 description: Part 5 of Razor Pages and Entity Framework tutorial series.
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 3/3/2021
 uid: data/ef-rp/complex-data-model
@@ -603,6 +603,7 @@ The next section fixes this error.
 ---
 
 -->
+<a name="applyexisting"></a>
 
 ## Apply the migration or drop and re-create
 
