@@ -1,8 +1,8 @@
 ---
 title: Custom authorization policies with `IAuthorizationRequirementData`
-author: rick-anderson
+author: tdykstra
 description: Learn how to specify requirements associated with the authorization policy in attribute definitions with the IAuthorizationRequirementData interface.
-ms.author: riande
+ms.author: tdykstra
 monikerRange: '>= aspnetcore-8.0'
 ms.date: 5/16/2025
 uid: security/authorization/iard
@@ -35,7 +35,7 @@ The `HandleRequirementAsync` method:
 
 :::code language="csharp" source="~/../AspNetCore.Docs.Samples/security/authorization/AuthRequirementsData/Authorization/MinimumAgeAuthorizationHandler.cs":::
 
-The `MinimumAgeAuthorizationHandler` is registered as a scoped <xref:Microsoft.AspNetCore.Authorization.IAuthorizationHandler> service in the app's `Program` file:
+The `MinimumAgeAuthorizationHandler` is registered as a singleton <xref:Microsoft.AspNetCore.Authorization.IAuthorizationHandler> service in the app's `Program` file:
 
 ```csharp
 builder.Services.AddSingleton<IAuthorizationHandler,

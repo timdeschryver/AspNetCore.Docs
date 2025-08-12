@@ -928,7 +928,7 @@ This topic only pertains to *app configuration*. Other aspects of running and ho
 
 Environment variables set in `launchSettings.json` override those set in the system environment.
 
-For more information on migrating app configuration from earlier versions of ASP.NET, see <xref:migration/proper-to-2x/index#store-configurations>.
+For more information on migrating app configuration from earlier versions of ASP.NET, see <xref:migration/fx-to-core/examples/configuration>.
 
 ## Add configuration from an external assembly
 
@@ -937,7 +937,6 @@ An <xref:Microsoft.AspNetCore.Hosting.IHostingStartup> implementation allows add
 ## Additional resources
 
 * [Configuration source code](https://github.com/dotnet/runtime/tree/main/src/libraries/Microsoft.Extensions.Configuration)
-* [WebApplicationBuilder source code](https://github.com/dotnet/aspnetcore/blob/v6.0.1/src/DefaultBuilder/src/WebApplicationBuilder.cs)
 * [View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/configuration/index/samples) ([how to download](xref:index#how-to-download-a-sample))
 * <xref:fundamentals/configuration/options>
 * <xref:blazor/fundamentals/configuration>

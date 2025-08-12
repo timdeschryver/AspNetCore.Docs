@@ -105,11 +105,11 @@ The fastest way to create a new <xref:Microsoft.EntityFrameworkCore.DbContext> i
 
 [!INCLUDE[](~/blazor/security/includes/secure-authentication-flows.md)]
 
-The recommended approach to create a new <xref:Microsoft.EntityFrameworkCore.DbContext> with dependencies is to use a factory. EF Core 5.0 or later provides a built-in factory for creating new contexts.
+The recommended approach to create a new <xref:Microsoft.EntityFrameworkCore.DbContext> with dependencies is to use a factory. EF Core in .NET 5 or later provides a built-in factory for creating new contexts.
 
 :::moniker range="< aspnetcore-5.0"
 
-In versions of .NET prior to 5.0, use the following `DbContextFactory`:
+In versions of .NET prior to .NET 5, use the following `DbContextFactory`:
 
 ```csharp
 using System;
@@ -139,7 +139,7 @@ namespace BlazorServerDbContextExample.Data
 In the preceding factory:
 
 * <xref:Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance%2A?displayProperty=nameWithType> satisfies any dependencies via the service provider.
-* <xref:Microsoft.EntityFrameworkCore.IDbContextFactory%601> is available in EF Core ASP.NET Core 5.0 or later, so the preceding interface is only required for ASP.NET Core 3.x.
+* <xref:Microsoft.EntityFrameworkCore.IDbContextFactory%601> is available in EF Core in .NET 5 or later, so the preceding interface is only required for ASP.NET Core 3.x.
 
 :::moniker-end
 
@@ -229,17 +229,20 @@ public void Dispose() => Context?.Dispose();
 
 <xref:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.EnableSensitiveDataLogging%2A> includes application data in exception messages and framework logging. The logged data can include the values assigned to properties of entity instances and parameter values for commands sent to the database. Logging data with <xref:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.EnableSensitiveDataLogging%2A> is a **security risk**, as it may expose passwords and other [Personally Identifiable Information (PII)](xref:blazor/security/index#personally-identifiable-information-pii) when it logs SQL statements executed against the database.
 
-We recommend only enabling <xref:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.EnableSensitiveDataLogging%2A> for development and testing:
+We recommend only enabling <xref:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.EnableSensitiveDataLogging%2A> for local development and testing:
 
 ```csharp
-#if DEBUG
+if (builder.Environment.IsDevelopment())
+{
     services.AddDbContextFactory<ContactContext>(opt =>
         opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db")
         .EnableSensitiveDataLogging());
-#else
+}
+else
+{
     services.AddDbContextFactory<ContactContext>(opt =>
         opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db"));
-#endif
+}
 ```
 
 ## Additional resources

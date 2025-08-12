@@ -206,7 +206,7 @@ Blazor apps that prerender their content on the server call <xref:Microsoft.AspN
 
 :::moniker range=">= aspnetcore-8.0"
 
-To prevent developer code in <xref:Microsoft.AspNetCore.Components.ComponentBase.OnInitializedAsync%2A> from running twice when prerendering, see the [Stateful reconnection after prerendering](#stateful-reconnection-after-prerendering) section. The content in the section focuses on Blazor Web Apps and stateful SignalR *reconnection*. To preserve state during the execution of initialization code while prerendering, see <xref:blazor/components/prerender#persist-prerendered-state>.
+To prevent developer code in <xref:Microsoft.AspNetCore.Components.ComponentBase.OnInitializedAsync%2A> from running twice when prerendering, see the [Stateful reconnection after prerendering](#stateful-reconnection-after-prerendering) section. The content in the section focuses on Blazor Web Apps and stateful SignalR *reconnection*. To preserve state during the execution of initialization code while prerendering, see <xref:blazor/state-management/prerendered-state-persistence>.
 
 :::moniker-end
 
@@ -722,13 +722,13 @@ By combining streaming rendering with persistent component state:
 For more information, see the following resources:
 
 * <xref:blazor/components/rendering#streaming-rendering>
-* <xref:blazor/components/prerender#persist-prerendered-state>.
+* <xref:blazor/state-management/prerendered-state-persistence>.
 
 :::moniker-end
 
 :::moniker range="< aspnetcore-8.0"
 
-Quiescence during prerendering results in a poor user experience. The delay can be addressed in apps that target .NET 8 or later with a feature called *streaming rendering*, usually combined with [persisting component state during prerendering](xref:blazor/components/integration#persist-prerendered-state) to avoid waiting for the asynchronous task to complete. In versions of .NET earlier than 8.0, executing a [long-running background task](#cancelable-background-work) that loads the data after final rendering can address a long rendering delay due to quiescence.
+Quiescence during prerendering results in a poor user experience. The delay can be addressed in apps that target .NET 8 or later with a feature called *streaming rendering*, usually combined with [persisting component state during prerendering](xref:blazor/components/integration#persist-prerendered-state) to avoid waiting for the asynchronous task to complete. In versions of .NET earlier than .NET 8, executing a [long-running background task](#cancelable-background-work) that loads the data after final rendering can address a long rendering delay due to quiescence.
 
 :::moniker-end
 
@@ -795,7 +795,7 @@ For more information on the <xref:Microsoft.AspNetCore.Mvc.TagHelpers.ComponentT
 
 :::moniker range=">= aspnetcore-8.0"
 
-The content in this section focuses on Blazor Web Apps and stateful SignalR *reconnection*. To preserve state during the execution of initialization code while prerendering, see <xref:blazor/components/prerender#persist-prerendered-state>.
+The content in this section focuses on Blazor Web Apps and stateful SignalR *reconnection*. To preserve state during the execution of initialization code while prerendering, see <xref:blazor/state-management/prerendered-state-persistence>.
 
 :::moniker-end
 

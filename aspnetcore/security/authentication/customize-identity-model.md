@@ -2,7 +2,7 @@
 title: Identity model customization in ASP.NET Core
 author: ajcvickers
 description: This article describes how to customize the underlying Entity Framework Core data model for ASP.NET Core Identity.
-ms.author: riande
+ms.author: tdykstra
 ms.date: 10/29/2024
 uid: security/authentication/customize_identity_model
 ---
@@ -11,7 +11,7 @@ uid: security/authentication/customize_identity_model
 
 By [Arthur Vickers](https://github.com/ajcvickers)
 
-ASP.NET Core Identity provides a framework for managing and storing user accounts in ASP.NET Core apps. Identity is added to your project when **Individual User Accounts** is selected as the authentication mechanism. By default, Identity makes use of an Entity Framework (EF) Core data model. This article describes how to customize the Identity model.
+ASP.NET Core Identity provides a framework for managing and storing user accounts in ASP.NET Core apps. Identity is added to your project when **Individual Accounts** is selected as the authentication mechanism. By default, Identity makes use of an Entity Framework (EF) Core data model. This article describes how to customize the Identity model.
 
 ## Identity and EF Core Migrations
 

@@ -23,13 +23,13 @@ This article explains how to manage Blazor app request routing and how to use th
 
 *This section applies to Blazor Web Apps.*
 
-If [prerendering is enabled](xref:blazor/components/render-modes#prerendering), the Blazor router (`Router` component, `<Router>` in `Routes.razor`) performs static routing to components during static server-side rendering (static SSR). This type of routing is called *static routing*.
+If [prerendering is enabled](xref:blazor/components/prerender), the Blazor router (`Router` component, `<Router>` in `Routes.razor`) performs static routing to components during static server-side rendering (static SSR). This type of routing is called *static routing*.
 
 When an interactive render mode is assigned to the `Routes` component, the Blazor router becomes interactive after static SSR with static routing on the server. This type of routing is called *interactive routing*.
 
 Static routers use endpoint routing and the HTTP request path to determine which component to render. When the router becomes interactive, it uses the document's URL (the URL in the browser's address bar) to determine which component to render. This means that the interactive router can dynamically change which component is rendered if the document's URL dynamically changes to another valid internal URL, and it can do so without performing an HTTP request to fetch new page content.
 
-Interactive routing also prevents prerendering because new page content isn't requested from the server with a normal page request. For more information, see <xref:blazor/components/prerender#interactive-routing-and-prerendering>.
+Interactive routing also prevents prerendering because new page content isn't requested from the server with a normal page request. For more information, see <xref:blazor/state-management/prerendered-state-persistence#interactive-routing-and-prerendering>.
 
 :::moniker-end
 
@@ -190,7 +190,7 @@ app.MapRazorComponents<App>()
 
 An interactive render mode can be assigned to the `Routes` component (`Routes.razor`) that makes the Blazor router become interactive after static SSR and static routing on the server. For example, `<Routes @rendermode="InteractiveServer" />` assigns interactive server-side rendering (interactive SSR) to the `Routes` component. The `Router` component inherits interactive server-side rendering (interactive SSR) from the `Routes` component. The router becomes interactive after static routing on the server.
 
-Internal navigation for interactive routing doesn't involve requesting new page content from the server. Therefore, prerendering doesn't occur for internal page requests. For more information, see <xref:blazor/components/prerender#interactive-routing-and-prerendering>.
+Internal navigation for interactive routing doesn't involve requesting new page content from the server. Therefore, prerendering doesn't occur for internal page requests. For more information, see <xref:blazor/state-management/prerendered-state-persistence#interactive-routing-and-prerendering>.
 
 If the `Routes` component is defined in the server project, the <xref:Microsoft.AspNetCore.Components.Routing.Router.AdditionalAssemblies> parameter of the `Router` component should include the `.Client` project's assembly. This allows the router to work correctly when rendered interactively.
 
@@ -708,13 +708,32 @@ For more information on component disposal, see <xref:blazor/components/componen
 
 <!-- UPDATE 10.0 - API doc cross-links -->
 
-*In ASP.NET Core 10.0 Preview 4, Not Found responses are only available for static SSR and global interactive rendering. Per-page/component rendering support is planned for Preview 5 in June, 2025.*
-
 <xref:Microsoft.AspNetCore.Components.NavigationManager> provides a `NotFound` method to handle scenarios where a requested resource isn't found during static server-side rendering (static SSR) or global interactive rendering:
 
 * **Static SSR**: Calling `NotFound` sets the HTTP status code to 404.
-* **Streaming rendering**: Throws an exception if the response has already started.
+
 * **Interactive rendering**: Signals the Blazor router ([`Router` component](xref:blazor/fundamentals/routing#route-templates)) to render Not Found content.
+
+* **Streaming rendering**: If [enhanced navigation](xref:blazor/fundamentals/routing#enhanced-navigation-and-form-handling) is active, [streaming rendering](xref:blazor/components/rendering#streaming-rendering) renders Not Found content without reloading the page. When enhanced navigation is blocked, the framework redirects to Not Found content with a page refresh.
+
+> [!NOTE]
+> The following discussion mentions that a Not Found Razor component can be assigned to the `Router` component's `NotFoundPage` parameter. The parameter works in concert with `NavigationManager.NotFound` and is described in more detail later in this section.
+
+Streaming rendering can only render components that have a route, such as a Not Found page assignment with the `Router` component's `NotFoundPage` parameter or a [Status Code Pages Re-execution Middleware page assignment](xref:fundamentals/error-handling#usestatuscodepageswithreexecute) (<xref:Microsoft.AspNetCore.Builder.StatusCodePagesExtensions.UseStatusCodePagesWithReExecute%2A>). The Not Found render fragment (`<NotFound>...</NotFound>`) and the `DefaultNotFound` 404 content ("`Not found`" plain text) don't have routes, so they can't be used during streaming rendering.
+
+Streaming `NavigationManager.NotFound` content rendering uses (in order):
+
+* A `NotFoundPage` passed to the `Router` component, if present.
+* A Status Code Pages Re-execution Middleware page, if configured.
+* No action if neither of the preceding approaches is adopted.
+
+Non-streaming `NavigationManager.NotFound` content rendering uses (in order):
+
+* A `NotFoundPage` passed to the `Router` component, if present.
+* Not Found render fragment content, if present. *Not recommended in .NET 10 or later.*
+* `DefaultNotFound` 404 content ("`Not found`" plain text).
+
+[Status Code Pages Re-execution Middleware](xref:fundamentals/error-handling#usestatuscodepageswithreexecute) with <xref:Microsoft.AspNetCore.Builder.StatusCodePagesExtensions.UseStatusCodePagesWithReExecute%2A> takes precedence for browser-based address routing problems, such as an incorrect URL typed into the browser's address bar or selecting a link that has no endpoint in the app.
 
 When a component is rendered statically (static SSR) and `NavigationManager.NotFound` is called, the 404 status code is set on the response:
 
@@ -730,14 +749,12 @@ When a component is rendered statically (static SSR) and `NavigationManager.NotF
 }
 ```
 
-Two approaches for providing Not Found content for global interactive rendering:
+To provide Not Found content for global interactive rendering, use a Not Found page (Razor component).
 
-* Use a Not Found page (Razor component).
-* Specify Not Found content in the [`Router` component's](xref:blazor/fundamentals/routing#route-templates) <xref:Microsoft.AspNetCore.Components.Routing.Router.NotFound%2A> property (`<NotFound>...</NotFound>` markup or by setting the `NotFound` parameter to a render fragment in C# code).
+> [!NOTE]
+> The Blazor project template includes a `NotFound.razor` page by default. This page automatically renders whenever `NavigationManager.NotFound` is called, making it easier to handle missing routes with a consistent user experience.
 
-The following example uses a Not Found page (`NotFoundPage` component) to render Not Found content.
-
-`NotFoundPage.razor`:
+`NotFound.razor`:
 
 ```razor
 <h1>Not Found</h1>
@@ -745,20 +762,20 @@ The following example uses a Not Found page (`NotFoundPage` component) to render
 <p>Sorry! Nothing to show.</p>
 ```
 
-Specify the `NotFoundPage` component to the `Router` component in `Routes.razor`. You might need to specify the component's namespace with an [`@using`](xref:mvc/views/razor#using) directive either at the top of the `Routes.razor` file or in an [`_Imports.razor` file](xref:blazor/components/index#component-name-class-name-and-namespace).
+Assign the `NotFound` component to the router's `NotFoundPage` parameter. `NotFoundPage` supports routing that can be used across Status Code Pages Re-execution Middleware, including non-Blazor middleware. If the `NotFound` render fragment (`<NotFound>...</NotFound>`) is defined together with `NotFoundPage`, the page has higher priority.
+
+In the following example, the preceding `NotFound` component is present in the app's `Pages` folder and passed to the `NotFoundPage` parameter:
 
 ```razor
-<Router ...>
-    <Found ...>
-        ...
+<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
-    <NotFound>
-        <NotFoundPage />
-    </NotFound>
 </Router>
 ```
 
-When a component is rendered with a global interactive render mode, calling `NotFound` signals the Blazor router to render Not Found content, which is the `NotFoundPage` component:
+When a component is rendered with a global interactive render mode, calling `NotFound` signals the Blazor router to render the `NotFound` component:
 
 ```razor
 @page "/render-not-found-interactive"
@@ -781,7 +798,7 @@ You can use the `OnNotFound` event for notifications when `NotFound` is invoked.
 
 <!-- UPDATE 10.0 - For Pre5, the following can be expanded to 
                    cover CSR with an added bit of coverage for 
-                   re-execution middleware. -->
+                   Re-execution Middleware. -->
 
 In the following example for components that adopt [interactive server-side rendering (interactive SSR)](xref:blazor/fundamentals/index#client-and-server-rendering-concepts), custom content is rendered depending on where `OnNotFound` is called. If the event is triggered by the following `Movie` component when a movie isn't found on component initialization, a custom message states that the requested movie isn't found. If the event is triggered by the `User` component, a different message states that the user isn't found.
 

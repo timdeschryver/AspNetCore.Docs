@@ -3,8 +3,8 @@ title: Safe storage of app secrets in development in ASP.NET Core
 author: tdykstra
 description: Learn how to store and retrieve sensitive information during the development of an ASP.NET Core app.
 ms.author: tdykstra
+ms.custom: mvc, sfi-ropc-nochange
 monikerRange: '>= aspnetcore-3.0'
-ms.custom: mvc
 ms.date: 10/30/2024
 uid: security/app-secrets
 ---
@@ -30,7 +30,7 @@ To use user secrets in a .NET console app, see [this GitHub issue](https://githu
 
 Environment variables are used to avoid storage of app secrets in code or in local configuration files. Environment variables override configuration values for all previously specified configuration sources.
 
-Consider an ASP.NET Core web app in which **Individual User Accounts** security is enabled. A default database connection string is included in the project's `appsettings.json` file with the key `DefaultConnection`. The default connection string is for LocalDB, which runs in user mode and doesn't require a password. During app deployment, the `DefaultConnection` key value can be overridden with an environment variable's value. The environment variable may store the complete connection string with sensitive credentials.
+Consider an ASP.NET Core web app in which **Individual Accounts** security is enabled. A default database connection string is included in the project's `appsettings.json` file with the key `DefaultConnection`. The default connection string is for LocalDB, which runs in user mode and doesn't require a password. During app deployment, the `DefaultConnection` key value can be overridden with an environment variable's value. The environment variable may store the complete connection string with sensitive credentials.
 
 > [!WARNING]
 > Environment variables are generally stored in plain, unencrypted text. If the machine or process is compromised, environment variables can be accessed by untrusted parties. Additional measures to prevent disclosure of user secrets may be required.
@@ -80,7 +80,7 @@ dotnet user-secrets init
 
 The preceding command adds a `UserSecretsId` element within a `PropertyGroup` of the project file. By default, the inner text of `UserSecretsId` is a GUID. The inner text is arbitrary, but is unique to the project.
 
-![The UserSecretsId MS Build property configuration in the app's project file.](~/security/app-secrets/_static/UserSecretsId.png)
+![The UserSecretsId MSBuild property configuration in the app's project file.](~/security/app-secrets/_static/UserSecretsId.png)
 
 ### Use Visual Studio
 

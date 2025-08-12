@@ -1,10 +1,10 @@
 ---
 title: Provide localized resources for languages and cultures in an ASP.NET Core app
-author: rick-anderson
+author: wadepickett
 description: Learn how to provide localized resources for localizing content of an ASP.NET Core app into different languages and cultures.
-ms.author: riande
+ms.author: wpickett
 monikerRange: '>= aspnetcore-5.0'
-ms.date: 02/23/2023
+ms.date: 06/20/2025
 uid: fundamentals/localization/provide-resources
 ---
 # Provide localized resources for languages and cultures in an ASP.NET Core app
@@ -124,7 +124,6 @@ Localizing an app also involves the following tasks:
 * [Globalizing and localizing .NET applications](/dotnet/standard/globalization-localization/index)
 * [Localization.StarterWeb project](https://github.com/aspnet/Entropy/tree/master/samples/Localization.StarterWeb) used in the article.
 * [Resources in .resx Files](/dotnet/framework/resources/working-with-resx-files-programmatically)
-* [Microsoft Multilingual App Toolkit](https://marketplace.visualstudio.com/items?itemName=MultilingualAppToolkit.MultilingualAppToolkit-18308)
 * [Localization & Generics](http://hishambinateya.com/localization-and-generics)
 
 :::moniker-end

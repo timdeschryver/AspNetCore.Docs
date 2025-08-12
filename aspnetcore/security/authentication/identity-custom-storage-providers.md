@@ -2,7 +2,7 @@
 title: Custom storage providers for ASP.NET Core Identity
 author: ardalis
 description: Learn how to configure custom storage providers for ASP.NET Core Identity.
-ms.author: riande
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 10/29/2024
 uid: security/authentication/identity-custom-storage-providers
@@ -24,7 +24,7 @@ By default, the ASP.NET Core Identity system stores user information in a SQL Se
 
 In each of these cases, you can write a customized provider for your storage mechanism and plug that provider into your app.
 
-ASP.NET Core Identity is included in project templates in Visual Studio with the "Individual User Accounts" option.
+ASP.NET Core Identity is included in project templates in Visual Studio with the "Individual Accounts" option.
 
 When using the .NET CLI, add `-au Individual`:
 

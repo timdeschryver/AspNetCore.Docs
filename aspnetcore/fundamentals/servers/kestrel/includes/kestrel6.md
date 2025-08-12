@@ -1,4 +1,4 @@
-:::moniker range=">= aspnetcore-6.0 < aspnetcore-8.0"
+:::moniker range=">= aspnetcore-6.0 <=aspnetcore-9.0"
 
 Kestrel is a cross-platform [web server for ASP.NET Core](xref:fundamentals/servers/index). Kestrel is the web server that's included and enabled by default in ASP.NET Core project templates.
 
@@ -11,7 +11,7 @@ Kestrel supports the following scenarios:
 
 &dagger;HTTP/2 will be supported on macOS in a future release.
 
-Kestrel is supported on all platforms and versions that .NET Core supports.
+Kestrel is supported on all platforms and versions that .NET supports.
 
 ## Get started
 
@@ -41,7 +41,6 @@ The following timeouts and rate limits aren't enforced when a debugger is attach
 
 <a name="endpoint-configuration"></a>
 * <xref:fundamentals/servers/kestrel/endpoints>
-* Source for [`WebApplication.CreateBuilder` method call to `UseKestrel`](https://github.com/dotnet/aspnetcore/blob/v6.0.2/src/DefaultBuilder/src/WebHost.cs#L224)
 <a name="kestrel-options"></a>
 * <xref:fundamentals/servers/kestrel/options>
 <a name="http2-support"></a>
@@ -57,7 +56,7 @@ The following timeouts and rate limits aren't enforced when a debugger is attach
 * When using UNIX sockets on Linux, the socket isn't automatically deleted on app shutdown. For more information, see [this GitHub issue](https://github.com/dotnet/aspnetcore/issues/14134).
 
 > [!NOTE]
-> As of ASP.NET Core 5.0, Kestrel's libuv transport is obsolete. The libuv transport doesn't receive updates to support new OS platforms, such as Windows ARM64, and will be removed in a future release. Remove any calls to the obsolete <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderLibuvExtensions.UseLibuv%2A> method and use Kestrel's default Socket transport instead.
+> As of .NET 5, Kestrel's libuv transport is obsolete. The libuv transport doesn't receive updates to support new OS platforms, such as Windows ARM64, and will be removed in a future release. Remove any calls to the obsolete <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderLibuvExtensions.UseLibuv%2A> method and use Kestrel's default Socket transport instead.
 
 :::moniker-end
 
@@ -74,7 +73,7 @@ Kestrel supports the following scenarios:
 
 &dagger;HTTP/2 will be supported on macOS in a future release.
 
-Kestrel is supported on all platforms and versions that .NET Core supports.
+Kestrel is supported on all platforms and versions that .NET supports.
 
 [View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/servers/kestrel/samples/5.x) ([how to download](xref:index#how-to-download-a-sample))
 
@@ -109,7 +108,7 @@ For information on apps that must protect a subset of the app with a certificate
 * When using UNIX sockets on Linux, the socket is not automatically deleted on app shut down. For more information, see [this GitHub issue](https://github.com/dotnet/aspnetcore/issues/14134).
 
 > [!NOTE]
-> As of ASP.NET Core 5.0, Kestrel's libuv transport is obsolete. The libuv transport doesn't receive updates to support new OS platforms, such as Windows ARM64, and will be removed in a future release. Remove any calls to the obsolete <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderLibuvExtensions.UseLibuv%2A> method and use Kestrel's default Socket transport instead.
+> As of .NET 5, Kestrel's libuv transport is obsolete. The libuv transport doesn't receive updates to support new OS platforms, such as Windows ARM64, and will be removed in a future release. Remove any calls to the obsolete <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderLibuvExtensions.UseLibuv%2A> method and use Kestrel's default Socket transport instead.
 
 :::moniker-end
 
@@ -126,7 +125,7 @@ Kestrel supports the following scenarios:
 
 &dagger;HTTP/2 will be supported on macOS in a future release.
 
-Kestrel is supported on all platforms and versions that .NET Core supports.
+Kestrel is supported on all platforms and versions that .NET supports.
 
 [View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/servers/kestrel/samples/3.x) ([how to download](xref:index#how-to-download-a-sample))
 
@@ -489,7 +488,7 @@ For more information on these approaches, see [Server URLs](xref:fundamentals/ho
 
 A development certificate is created:
 
-* When the [.NET Core SDK](/dotnet/core/sdk) is installed.
+* When the [.NET SDK](/dotnet/core/sdk) is installed.
 * The [dev-certs tool](/dotnet/core/tools/dotnet-dev-certs) is used to create a certificate.
 
 Some browsers require granting explicit permission to trust the local development certificate.

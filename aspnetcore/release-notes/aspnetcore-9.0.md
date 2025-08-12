@@ -1,15 +1,15 @@
 ---
-title: What's new in ASP.NET Core 9.0
-author: rick-anderson
-description: Learn about the new features in ASP.NET Core 9.0.
-ms.author: riande
+title: What's new in ASP.NET Core in .NET 9
+author: wadepickett
+description: Learn about the new features in ASP.NET Core in .NET 9.
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 11/19/2024
 uid: aspnetcore-9
 ---
-# What's new in ASP.NET Core 9.0
+# What's new in ASP.NET Core in .NET 9
 
-This article highlights the most significant changes in ASP.NET Core 9.0 with links to relevant documentation.
+This article highlights the most significant changes in ASP.NET Core in .NET 9 with links to relevant documentation.
 
 ## Static asset delivery optimization
 

@@ -5,7 +5,7 @@ description: Learn how to call a web API from Blazor apps.
 monikerRange: '>= aspnetcore-3.1'
 ms.author: wpickett
 ms.custom: mvc
-ms.date: 04/29/2025
+ms.date: 07/29/2025
 uid: blazor/call-web-api
 ---
 # Call a web API from ASP.NET Core Blazor
@@ -33,7 +33,7 @@ For more information, see the following resources:
 
 ## Microsoft identity platform for web API calls
 
-Blazor Web Apps that use use [Microsoft identity platform](/entra/identity-platform/)/[Microsoft Identity Web packages](/entra/msal/dotnet/microsoft-identity-web/) for [Microsoft Entra ID](https://www.microsoft.com/security/business/microsoft-entra) can make streamlined web API calls with API provided by the [`Microsoft.Identity.Web.DownstreamApi` NuGet package](https://www.nuget.org/packages/Microsoft.Identity.Web.DownstreamApi).
+Blazor Web Apps that use use [Microsoft identity platform](/entra/identity-platform/) with [Microsoft Identity Web packages](/entra/msal/dotnet/microsoft-identity-web/) for [Microsoft Entra ID](https://www.microsoft.com/security/business/microsoft-entra) can make streamlined web API calls with API provided by the [`Microsoft.Identity.Web.DownstreamApi` NuGet package](https://www.nuget.org/packages/Microsoft.Identity.Web.DownstreamApi).
 
 [!INCLUDE[](~/includes/package-reference.md)]
 
@@ -60,16 +60,141 @@ In the app's `Program` file, call:
 <!-- UPDATE 10.0 - Missing API doc for 'AddDownstreamApi' -->
 
 * <xref:Microsoft.Identity.Web.MicrosoftIdentityWebApiAuthenticationBuilder.EnableTokenAcquisitionToCallDownstreamApi%2A>: Enables token acquisition to call web APIs.
-* `AddDownstreamApi`: Adds a named downstream web service related to a specific configuration section.
-* <xref:Microsoft.Identity.Web.TokenCacheProviders.InMemory.InMemoryTokenCacheProviderExtension.AddInMemoryTokenCaches%2A>: Adds both the app and per-user in-memory token caches.
+* `AddDownstreamApi`: Microsoft Identity Web packages provide API to create a named downstream web service for making web API calls. <xref:Microsoft.Identity.Abstractions.IDownstreamApi> is injected into a server-side class, which is used to call <xref:Microsoft.Identity.Abstractions.IDownstreamApi.CallApiForUserAsync%2A> to obtain weather data from an external web API (`MinimalApiJwt` project).
+* <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.DistributedTokenCacheAdapterExtension.AddDistributedTokenCaches%2A>: Adds the .NET distributed token caches to the service collection.
+* <xref:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache%2A>: Adds a default implementation of <xref:Microsoft.Extensions.Caching.Distributed.IDistributedCache> that stores cache items in memory.
+* Configure the distributed token cache options (<xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions>):
+  * In development for debugging purposes, you can disable the L1 cache by setting <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions.DisableL1Cache%2A> to `true`. ***Be sure to reset it back to `false` for production.***
+  * Set the maximum size of your L1 cache with [`L1CacheOptions.SizeLimit`](xref:Microsoft.Extensions.Caching.Memory.MemoryCacheOptions.SizeLimit%2A) to prevent the cache from overrunning the server's memory. The default value is 500 MB.
+  * In development for debugging purposes, you can disable token encryption at rest by setting <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions.Encrypt%2A> to `false`, which is the default value. ***Be sure to reset it back to `true` for production.***
+  * Set token eviction from the cache with <xref:Microsoft.Extensions.Caching.Distributed.DistributedCacheEntryOptions.SlidingExpiration%2A>. The default value is 1 hour.
+  * For more information, including guidance on the callback for L2 cache failures (<xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions.OnL2CacheFailure%2A>) and asynchronous L2 cache writes (<xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions.EnableAsyncL2Write%2A>), see <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions> and [Token cache serialization: Distributed token caches](/entra/msal/dotnet/how-to/token-cache-serialization#distributed-token-caches).
+
+You can choose to encrypt the cache and should always do so in production.
 
 ```csharp
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddDownstreamApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
-    .AddInMemoryTokenCaches();
+    .AddDownstreamApi("DownstreamApi", 
+        builder.Configuration.GetSection("DownstreamApi"))
+    .AddDistributedTokenCaches();
+
+// Requires the 'Microsoft.Extensions.Caching.Memory' NuGet package
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
+    options => 
+    {
+        // The following lines that are commented out reflect
+        // default values. We recommend overriding the default
+        // value of Encrypt to encrypt tokens at rest.
+
+        //options.DisableL1Cache = false;
+        //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;
+        options.Encrypt = true;
+        //options.SlidingExpiration = TimeSpan.FromHours(1);
+    });
 ```
+
+In-memory distributed token caches are created when calling <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.DistributedTokenCacheAdapterExtension.AddDistributedTokenCaches%2A> to ensure that there's a base implementation available for distributed token caching.
+
+Production web apps and web APIs should use a production distributed token cache (for example: [Redis](https://redis.io/), [Microsoft SQL Server](https://www.microsoft.com/sql-server), [Microsoft Azure Cosmos DB](https://azure.microsoft.com/products/cosmos-db)).
+
+> [!NOTE]
+> For local development and testing on a single machine, you can use in-memory token caches instead of distributed token caches:
+>
+> ```csharp
+> builder.Services.AddInMemoryTokenCaches();
+> ```
+>
+> Later in the development and testing period, adopt a production distributed token cache provider.
+
+<xref:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache%2A> adds a default implementation of <xref:Microsoft.Extensions.Caching.Distributed.IDistributedCache> that stores cache items in memory, which is used by Microsoft Identity Web for token caching.
+
+<xref:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache%2A> requires a package reference to the [`Microsoft.Extensions.Caching.Memory` NuGet package](https://www.nuget.org/packages/Microsoft.Extensions.Caching.Memory).
+
+[!INCLUDE[](~/includes/package-reference.md)]
+
+To configure a production distributed cache provider, see <xref:performance/caching/distributed>. 
+
+> [!WARNING]
+> Always replace the in-memory distributed token caches with a real token cache provider when deploying the app to a production environment. If you fail to adopt a production distributed token cache provider, the app may suffer significantly degraded performance.
+
+For more information, see [Token cache serialization: Distributed caches](/entra/msal/dotnet/how-to/token-cache-serialization?tabs=msal#distributed-caches). However, the code examples shown don't apply to ASP.NET Core apps, which configure distributed caches via <xref:Microsoft.Extensions.DependencyInjection.MemoryCacheServiceCollectionExtensions.AddDistributedMemoryCache%2A>, not <xref:Microsoft.Identity.Web.TokenCacheExtensions.AddDistributedTokenCache%2A>.
+
+<!-- DOC AUTHOR NOTE: The next part on using a shared DP key ring is also
+                      covered in the *BWA + Entra* security article. Mirror 
+                      changes when updating this portion of content. -->
+
+Use a shared Data Protection key ring in production so that instances of the app across servers in a web farm can decrypt tokens when <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions.Encrypt%2A?displayProperty=nameWithType> is set to `true`.
+
+> [!NOTE]
+> For early development and local testing on a single machine, you can set <xref:Microsoft.Identity.Web.TokenCacheProviders.Distributed.MsalDistributedTokenCacheAdapterOptions.Encrypt%2A> to `false` and configure a shared Data Protection key ring later:
+>
+> ```csharp
+> options.Encrypt = false;
+> ```
+>
+> Later in the development and testing period, enable token encryption and adopt a shared Data Protection key ring.
+
+The following example shows how to use [Azure Blob Storage and Azure Key Vault (`PersistKeysToAzureBlobStorage`/`ProtectKeysWithAzureKeyVault`)](xref:security/data-protection/configuration/overview#protect-keys-with-azure-key-vault-protectkeyswithazurekeyvault) for the shared key ring. The service configurations are base case scenarios for demonstration purposes. Before deploying production apps, familiarize yourself with the Azure services and adopt best practices using the Azure services' dedicated documentation sets, which are linked at the end of this section.
+
+Add the following packages to the server project of the Blazor Web App:
+
+* [`Azure.Extensions.AspNetCore.DataProtection.Blobs`](https://www.nuget.org/packages/Azure.Extensions.AspNetCore.DataProtection.Blobs)
+* [`Azure.Extensions.AspNetCore.DataProtection.Keys`](https://www.nuget.org/packages/Azure.Extensions.AspNetCore.DataProtection.Keys)
+
+[!INCLUDE[](~/includes/package-reference.md)]
+
+> [!NOTE]
+> Before proceeding with the following steps, confirm that the app is registered with Microsoft Entra.
+
+Configure Azure Blob Storage to maintain data protection keys. Follow the guidance in <xref:security/data-protection/implementation/key-storage-providers#azure-storage>.
+
+Configure Azure Key Vault to encrypt the data protection keys at rest. Follow the guidance in <xref:security/data-protection/configuration/overview#protect-keys-with-azure-key-vault-protectkeyswithazurekeyvault>.
+
+Use the following code in the `Program` file where services are registered:
+
+```csharp
+TokenCredential? credential;
+
+if (builder.Environment.IsProduction())
+{
+    credential = new ManagedIdentityCredential("{MANAGED IDENTITY CLIENT ID}");
+}
+else
+{
+    // Local development and testing only
+    DefaultAzureCredentialOptions options = new()
+    {
+        // Specify the tenant ID to use the dev credentials when running the app locally
+        // in Visual Studio.
+        VisualStudioTenantId = "{TENANT ID}",
+        SharedTokenCacheTenantId = "{TENANT ID}"
+    };
+
+    credential = new DefaultAzureCredential(options);
+}
+
+builder.Services.AddDataProtection()
+    .SetApplicationName("{APPLICATION NAME}")
+    .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI}"), credential)
+    .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), credential);
+```
+
+`{MANAGED IDENTITY CLIENT ID}`: The Azure Managed Identity Client ID (GUID).
+
+`{TENANT ID}`: Tenant ID.
+
+`{APPLICATION NAME}`: <xref:Microsoft.AspNetCore.DataProtection.DataProtectionBuilderExtensions.SetApplicationName%2A> sets the unique name of this app within the data protection system. The value should match across deployments of the app.
+
+`{BLOB URI}`: Full URI to the key file. The URI is generated by Azure Storage when you create the key file. Do not use a SAS.
+
+`{KEY IDENTIFIER}`: Azure Key Vault key identifier used for key encryption. An access policy allows the application to access the key vault with `Get`, `Unwrap Key`, and `Wrap Key` permissions. The key identifier is obtained from the key in the Entra or Azure portal after it's created. If you enable autorotation of the key vault key, make sure that you use a versionless key identifier in the app's key vault configuration, where no key GUID is placed at the end of the identifier (example: `https://contoso.vault.azure.net/keys/data-protection`).
+
+> [!NOTE]
+> In non-Production environments, the preceding example uses <xref:Azure.Identity.DefaultAzureCredential> to simplify authentication while developing apps that deploy to Azure by combining credentials used in Azure hosting environments with credentials used in local development. When moving to production, an alternative is a better choice, such as the <xref:Azure.Identity.ManagedIdentityCredential> shown in the preceding example. For more information, see [Authenticate Azure-hosted .NET apps to Azure resources using a system-assigned managed identity](/dotnet/azure/sdk/authentication/system-assigned-managed-identity).
 
 Inject <xref:Microsoft.Identity.Abstractions.IDownstreamApi> and call <xref:Microsoft.Identity.Abstractions.IDownstreamApi.CallApiForUserAsync%2A> when calling on behalf of a user:
 
@@ -94,11 +219,19 @@ This approach is used by the `BlazorWebAppEntra` and `BlazorWebAppEntraBff` samp
 
 For more information, see the following resources:
 
+* <xref:security/data-protection/implementation/key-storage-providers#azure-storage>
+* <xref:security/data-protection/configuration/overview#protect-keys-with-azure-key-vault-protectkeyswithazurekeyvault>
+* [Use the Azure SDK for .NET in ASP.NET Core apps](/dotnet/azure/sdk/aspnetcore-guidance?tabs=api)
 * [Web API documentation | Microsoft identity platform](/entra/identity-platform/index-web-api)
+* [A web API that calls web APIs: Call an API: Option 2: Call a downstream web API with the helper class](/entra/identity-platform/scenario-web-api-call-api-call-api?tabs=aspnetcore#option-2-call-a-downstream-web-api-with-the-helper-class)
 * <xref:Microsoft.Identity.Abstractions.IDownstreamApi>
 * *Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID*
   * [Non-BFF pattern (Interactive Auto)](xref:blazor/security/blazor-web-app-entra?pivots=non-bff-pattern)
   * [BFF pattern (Interactive Auto)](xref:blazor/security/blazor-web-app-entra?pivots=non-bff-pattern-server)
+* [Host ASP.NET Core in a web farm: Data Protection](xref:host-and-deploy/web-farm#data-protection)
+* [Azure Key Vault documentation](/azure/key-vault/general/)
+* [Azure Storage documentation](/azure/storage/)
+* [Provide access to Key Vault keys, certificates, and secrets with Azure role-based access control](/azure/key-vault/general/rbac-guide?tabs=azure-cli)
 
 ## Sample apps
 
@@ -210,18 +343,39 @@ The solution includes a demonstration of obtaining weather data securely via an 
 
 ### `BlazorWebAppEntra`
 
-A Blazor Web App with global Auto interactivity that uses [Microsoft identity platform](/entra/identity-platform/)/[Microsoft Identity Web packages](/entra/msal/dotnet/microsoft-identity-web/) for [Microsoft Entra ID](https://www.microsoft.com/security/business/microsoft-entra). The solution includes a demonstration of obtaining weather data securely via an external web API when a component that adopts Interactive Auto rendering is rendered on the client.
+A Blazor Web App with global Auto interactivity that uses [Microsoft identity platform](/entra/identity-platform/) with [Microsoft Identity Web packages](/entra/msal/dotnet/microsoft-identity-web/) for [Microsoft Entra ID](https://www.microsoft.com/security/business/microsoft-entra). The solution includes a demonstration of obtaining weather data securely via an external web API when a component that adopts Interactive Auto rendering is rendered on the client.
 
 ### `BlazorWebAppEntraBff`
 
 A Blazor Web App with global Auto interactivity that uses:
 
-* [Microsoft identity platform](/entra/identity-platform/)/[Microsoft Identity Web packages](/entra/msal/dotnet/microsoft-identity-web/) for [Microsoft Entra ID](https://www.microsoft.com/security/business/microsoft-entra).
+* [Microsoft identity platform](/entra/identity-platform/) with [Microsoft Identity Web packages](/entra/msal/dotnet/microsoft-identity-web/) for [Microsoft Entra ID](https://www.microsoft.com/security/business/microsoft-entra).
 * The [Backend for Frontend (BFF) pattern](/azure/architecture/patterns/backends-for-frontends), which is a pattern of app development that creates backend services for frontend apps or interfaces.
 
 The solution includes a demonstration of obtaining weather data securely via an external web API when a component that adopts Interactive Auto rendering is rendered on the client.
 
 :::moniker-end
+
+## Disposal of `HttpRequestMessage`, `HttpResponseMessage`, and `HttpClient`
+
+An <xref:System.Net.Http.HttpRequestMessage> without a body doesn't require explicit disposal with a [`using` declaration (C# 8 or later)](/dotnet/csharp/language-reference/proposals/csharp-8.0/using) or a [`using` block (all C# releases)](/dotnet/csharp/language-reference/keywords/using), but we recommend disposing with every use for the following reasons:
+
+* To gain a performance improvement by avoiding finalizers.
+* It hardens the code for the future in case a request body is ever added to an <xref:System.Net.Http.HttpRequestMessage> that didn't initially have one.
+* To potentially avoid functional issues if a delegating handler expects a call to <xref:System.IDisposable.Dispose%2A>/<xref:System.IAsyncDisposable.DisposeAsync%2A>.
+* It's simpler to apply a general rule everywhere than trying to remember specific cases.
+
+***Always*** dispose of <xref:System.Net.Http.HttpResponseMessage> instances.
+
+***Never*** dispose of <xref:System.Net.Http.HttpClient> instances created by calling <xref:System.Net.Http.IHttpClientFactory.CreateClient%2A> because they're managed by the framework.
+
+Example:
+
+```csharp
+using var request = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
+var client = clientFactory.CreateClient("ExternalApi");
+using var response = await client.SendAsync(request);
+```
 
 ## Client-side scenarios for calling external web APIs
 
@@ -270,12 +424,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get,
+        using var request = new HttpRequestMessage(HttpMethod.Get,
             "https://api.github.com/repos/dotnet/AspNetCore.Docs/branches");
         request.Headers.Add("Accept", "application/vnd.github.v3+json");
         request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
 
-        var response = await Client.SendAsync(request);
+        using var response = await Client.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
@@ -330,10 +484,10 @@ Even if you call <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssem
 
           var urlEncodedRequestUri = WebUtility.UrlEncode("{REQUEST URI}");
 
-          var request = new HttpRequestMessage(HttpMethod.Get, 
+          using var request = new HttpRequestMessage(HttpMethod.Get, 
               $"https://corsproxy.io/?{urlEncodedRequestUri}");
 
-          var response = await client.SendAsync(request);
+          using var response = await client.SendAsync(request);
 
           ...
       }
@@ -387,14 +541,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get,
+        using var request = new HttpRequestMessage(HttpMethod.Get,
             "https://api.github.com/repos/dotnet/AspNetCore.Docs/branches");
         request.Headers.Add("Accept", "application/vnd.github.v3+json");
         request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
 
         var client = ClientFactory.CreateClient();
 
-        var response = await client.SendAsync(request);
+        using var response = await client.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
@@ -433,7 +587,7 @@ When using the interactive WebAssembly and Auto render modes, components are pre
 * The client version calls the web API with a preconfigured <xref:System.Net.Http.HttpClient>.
 * The server version can typically access the server-side resources directly. Injecting an <xref:System.Net.Http.HttpClient> on the server that makes calls back to the server isn't recommended, as the network request is typically unnecessary. Alternatively, the API might be external to the server project, but a service abstraction for the server is required to transform the request in some way, for example to add an access token to a proxied request.
 
-When using the WebAssembly render mode, you also have the option of disabling prerendering, so the components only render from the client. For more information, see <xref:blazor/components/render-modes#prerendering>.
+When using the WebAssembly render mode, you also have the option of disabling prerendering, so the components only render from the client. For more information, see <xref:blazor/components/prerender#disable-prerendering>.
 
 Examples ([sample apps](#sample-apps)):
 
@@ -461,25 +615,29 @@ Use ***either*** of the following approaches:
 
   Example: Todo list web API in the `BlazorWebAppCallWebApi` [sample app](#sample-apps)
 
-* If prerendering isn't required for a WebAssembly component that calls the web API, disable prerendering by following the guidance in <xref:blazor/components/render-modes#prerendering>. If you adopt this approach, you don't need to add <xref:System.Net.Http.HttpClient> services to the main project of the Blazor Web App because the component isn't prerendered on the server.
+* If prerendering isn't required for a WebAssembly component that calls the web API, disable prerendering by following the guidance in <xref:blazor/components/prerender#disable-prerendering>. If you adopt this approach, you don't need to add <xref:System.Net.Http.HttpClient> services to the main project of the Blazor Web App because the component isn't prerendered on the server.
 
-For more information, see [Client-side services fail to resolve during prerendering](xref:blazor/components/render-modes#client-side-services-fail-to-resolve-during-prerendering).
+For more information, see the [Client-side services fail to resolve during prerendering](xref:blazor/components/prerender#client-side-services-fail-to-resolve-during-prerendering) section of the *Prerendering* article.
 
 ## Prerendered data
 
 When prerendering, components render twice: first statically, then interactively. State doesn't automatically flow from the prerendered component to the interactive one. If a component performs asynchronous initialization operations and renders different content for different states during initialization, such as a "Loading..." progress indicator, you may see a flicker when the component renders twice.
 
-<!-- UPDATE 10.0 The status of the enhanced nav fix is scheduled for .NET 10. 
+You can address this by flowing prerendered state using the Persistent Component State API, which the `BlazorWebAppCallWebApi` and `BlazorWebAppCallWebApi_Weather` [sample apps](#sample-apps) demonstrate. When the component renders interactively, it can render the same way using the same state. However, the API doesn't currently work with enhanced navigation, which you can work around by disabling enhanced navigation on links to the page (`data-enhanced-nav=false`). For more information, see the following resources:
+
+<!-- UPDATE 10.0 The enhanced nav update is in for Preview 7. 
+                 The preceding paragraph will be updated/
+                 versioned on the upcoming docs Preview 7 PR. 
+                 I'll go ahead and remove the PU issue 
+                 cross-link on PR #35873.
+            
                  Note that the README of the "weather" call web API
                  sample has a cross-link and remark on this, and the
                  sample app disabled enhanced nav on the weather
                  component link. -->
 
-You can address this by flowing prerendered state using the Persistent Component State API, which the `BlazorWebAppCallWebApi` and `BlazorWebAppCallWebApi_Weather` [sample apps](#sample-apps) demonstrate. When the component renders interactively, it can render the same way using the same state. However, the API doesn't currently work with enhanced navigation, which you can work around by disabling enhanced navigation on links to the page (`data-enhanced-nav=false`). For more information, see the following resources:
-
-* <xref:blazor/components/prerender#persist-prerendered-state>
+* <xref:blazor/state-management/prerendered-state-persistence>
 * <xref:blazor/fundamentals/routing#enhanced-navigation-and-form-handling>
-* [Support persistent component state across enhanced page navigations (`dotnet/aspnetcore` #51584)](https://github.com/dotnet/aspnetcore/issues/51584)
 
 :::moniker-end
 
@@ -498,11 +656,11 @@ In the following file upload example:
 * `Http` is the <xref:System.Net.Http.HttpClient>.
 
 ```csharp
-var request = new HttpRequestMessage(HttpMethod.Post, "/Filesave");
+using var request = new HttpRequestMessage(HttpMethod.Post, "/Filesave");
 request.SetBrowserRequestStreamingEnabled(true);
 request.Content = content;
 
-var response = await Http.SendAsync(request);
+using var response = await Http.SendAsync(request);
 ```
 
 Streaming requests:
@@ -656,7 +814,7 @@ As of C# 11 (.NET 7), you can compose a JSON string as a [raw string literal](/d
 <xref:System.Net.Http.Json.HttpClientJsonExtensions.PatchAsJsonAsync%2A> returns an <xref:System.Net.Http.HttpResponseMessage>. To deserialize the JSON content from the response message, use the <xref:System.Net.Http.Json.HttpContentJsonExtensions.ReadFromJsonAsync%2A> extension method. The following example reads JSON todo item data as an array. An empty array is created if no item data is returned by the method, so `content` isn't null after the statement executes:
 
 ```csharp
-var response = await Http.PatchAsJsonAsync(...);
+using var response = await Http.PatchAsJsonAsync(...);
 var content = await response.Content.ReadFromJsonAsync<TodoItem[]>() ??
     Array.Empty<TodoItem>();
 ```
@@ -1014,6 +1172,9 @@ public class CookieHandler : DelegatingHandler
 }
 ```
 
+> [!NOTE]
+> For guidance on how to access an `AuthenticationStateProvider` from a `DelegatingHandler`, see <xref:blazor/security/additional-scenarios#access-authenticationstateprovider-in-outgoing-request-middleware>.
+
 The `CookieHandler` is registered in the `Program` file:
 
 ```csharp
@@ -1036,10 +1197,10 @@ For a demonstration, see <xref:blazor/security/webassembly/standalone-with-ident
 When composing an <xref:System.Net.Http.HttpRequestMessage>, set the browser request credentials and header directly:
 
 ```csharp
-var requestMessage = new HttpRequestMessage() { ... };
+using var request = new HttpRequestMessage() { ... };
 
-requestMessage.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
-requestMessage.Headers.Add("X-Requested-With", [ "XMLHttpRequest" ]);
+request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+request.Headers.Add("X-Requested-With", [ "XMLHttpRequest" ]);
 ```
 
 ## `HttpClient` and `HttpRequestMessage` with Fetch API request options
@@ -1072,7 +1233,7 @@ requestMessage.Headers.Add("X-Requested-With", [ "XMLHttpRequest" ]);
 
     private async Task PostRequest()
     {
-        var requestMessage = new HttpRequestMessage()
+        using var request = new HttpRequestMessage()
         {
             Method = new HttpMethod("POST"),
             RequestUri = new Uri("https://localhost:10000/todoitems"),
@@ -1088,13 +1249,13 @@ requestMessage.Headers.Add("X-Requested-With", [ "XMLHttpRequest" ]);
 
         if (tokenResult.TryGetToken(out var token))
         {
-            requestMessage.Headers.Authorization =
+            request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", token.Value);
 
-            requestMessage.Content.Headers.TryAddWithoutValidation(
+            request.Content.Headers.TryAddWithoutValidation(
                 "x-custom-header", "value");
 
-            var response = await Http.SendAsync(requestMessage);
+            using var response = await Http.SendAsync(request);
             var responseStatusCode = response.StatusCode;
 
             responseBody = await response.Content.ReadAsStringAsync();
@@ -1120,8 +1281,6 @@ Calling <xref:System.Net.Http.HttpContent.ReadAsStreamAsync%2A?displayProperty=n
 
 [!INCLUDE[](~/includes/aspnetcore-repo-ref-source-links.md)]
 
-<!-- UPDATE 10.0 - Tracking on https://github.com/dotnet/runtime/issues/97449
-
 To opt-out of response streaming globally, use either of the following approaches:
 
 * Add the `<WasmEnableStreamingResponse>` property to the project file with a value of `false`:
@@ -1132,16 +1291,10 @@ To opt-out of response streaming globally, use either of the following approache
 
 * Set the `DOTNET_WASM_ENABLE_STREAMING_RESPONSE` environment variable to `false` or `0`.
 
-............. AND REMOVE THE NEXT LINE .............
-
--->
-
-To opt-out of response streaming globally, set the `DOTNET_WASM_ENABLE_STREAMING_RESPONSE` environment variable to `false` or `0`.
-
-To opt-out of response streaming for an individual request, set <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageExtensions.SetBrowserResponseStreamingEnabled%2A> to `false` on the <xref:System.Net.Http.HttpRequestMessage> (`requestMessage` in the following example):
+To opt-out of response streaming for an individual request, set <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageExtensions.SetBrowserResponseStreamingEnabled%2A> to `false` on the <xref:System.Net.Http.HttpRequestMessage> (`request` in the following example):
 
 ```csharp
-requestMessage.SetBrowserResponseStreamingEnabled(false);
+request.SetBrowserResponseStreamingEnabled(false);
 ```
 
 :::moniker-end
@@ -1151,14 +1304,15 @@ requestMessage.SetBrowserResponseStreamingEnabled(false);
 The HTTP response is typically buffered to enable support for synchronous reads on the response content. To enable support for response streaming, set <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageExtensions.SetBrowserResponseStreamingEnabled%2A>  to `true` on the <xref:System.Net.Http.HttpRequestMessage>:
 
 ```csharp
-requestMessage.SetBrowserResponseStreamingEnabled(true);
+request.SetBrowserResponseStreamingEnabled(true);
 ```
 
 By default, [`HttpCompletionOption.ResponseContentRead`](xref:System.Net.Http.HttpCompletionOption) is set, which results in the <xref:System.Net.Http.HttpClient> completing after reading the entire response, including the content. In order to be able to use the <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageExtensions.SetBrowserResponseStreamingEnabled%2A> option on large files, set [`HttpCompletionOption.ResponseHeadersRead`](xref:System.Net.Http.HttpCompletionOption) to avoid caching the file's content in memory:
 
 ```diff
-- var response = await Http.SendAsync(requestMessage);
-+ var response = await Http.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead);
+- using var response = await Http.SendAsync(request);
++ using var response = await Http.SendAsync(request, 
++     HttpCompletionOption.ResponseHeadersRead);
 ```
 
 :::moniker-end
@@ -1166,7 +1320,7 @@ By default, [`HttpCompletionOption.ResponseContentRead`](xref:System.Net.Http.Ht
 To include credentials in a cross-origin request, use the <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageExtensions.SetBrowserRequestCredentials%2A> extension method:
 
 ```csharp
-requestMessage.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
 ```
 
 For more information on Fetch API options, see [MDN web docs: WindowOrWorkerGlobalScope.fetch(): Parameters](https://developer.mozilla.org/docs/Web/API/fetch#Parameters).
@@ -1261,9 +1415,9 @@ To add antiforgery support to an HTTP request, inject the `AntiforgeryStateProvi
 private async Task OnSubmit()
 {
     var antiforgery = Antiforgery.GetAntiforgeryToken();
-    var request = new HttpRequestMessage(HttpMethod.Post, "action");
+    using var request = new HttpRequestMessage(HttpMethod.Post, "action");
     request.Headers.Add("RequestVerificationToken", antiforgery.RequestToken);
-    var response = await client.SendAsync(request);
+    using var response = await client.SendAsync(request);
     ...
 }
 ```

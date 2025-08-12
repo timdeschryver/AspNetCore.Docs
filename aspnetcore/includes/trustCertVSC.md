@@ -5,13 +5,13 @@
   ```
   :::moniker range="<=aspnetcore-8.0"
 
-  The preceding command requires .NET 9 SDK or later on Linux. For Linux on .NET 8.0.401 SDK and earlier, see your Linux distribution's documentation for trusting a certificate.
+  The preceding command requires .NET 9 or later SDK on Linux. For Linux on .NET 8.0.401 or earlier SDK, see your Linux distribution's documentation for trusting a certificate.
 
   :::moniker-end
 
   The preceding command displays the following dialog, provided the certificate was not previously trusted:
 
-  ![Security warning dialog](~/getting-started/_static/cert.png)
+  ![Security warning dialog](~/static/cert.png)
 
 * Select **Yes** if you agree to trust the development certificate.
 

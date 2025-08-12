@@ -1,9 +1,9 @@
 ---
 title: Razor file compilation in ASP.NET Core
-author: rick-anderson
+author: tdykstra
 description: Learn how compilation of Razor files occurs in an ASP.NET Core app.
 monikerRange: '>= aspnetcore-3.1'
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 03/20/2023
 uid: mvc/views/view-compilation
@@ -95,7 +95,7 @@ Build-time and publish-time compilation of Razor files is enabled by default by 
 
 ## Enable runtime compilation at project creation
 
-The Razor Pages and MVC project templates include an option to enable runtime compilation when the project is created. This option is supported in ASP.NET Core 3.1 and later.
+The Razor Pages and MVC project templates include an option to enable runtime compilation when the project is created. This option is supported in ASP.NET Core 3.1 or later.
 
 # [Visual Studio](#tab/visual-studio)
 

@@ -5,7 +5,7 @@ description: Learn how to secure a Blazor Web App with OpenID Connect (OIDC).
 monikerRange: '>= aspnetcore-8.0'
 ms.author: wpickett
 ms.custom: mvc
-ms.date: 04/29/2025
+ms.date: 07/29/2025
 uid: blazor/security/blazor-web-app-oidc
 zone_pivot_groups: blazor-web-app-oidc-specification
 ---
@@ -45,6 +45,8 @@ The sample app consists of the following projects:
 
 Access the sample through the latest version folder in the Blazor samples repository with the following link. The sample is in the `BlazorWebAppOidc` folder for .NET 8 or later.
 
+Start the solution from the ***`Aspire/Aspire.AppHost` project***.
+
 [View or download sample code](https://github.com/dotnet/blazor-samples) ([how to download](xref:blazor/fundamentals/index#sample-apps))
 
 Sample solution features:
@@ -55,7 +57,7 @@ Sample solution features:
 
 * The app securely calls a web API for weather data:
 
-  * When rendering the `Weather` component on the server, the component uses the `ServerWeatherForecaster` on the server to obtain weather data from the web API in the `MinimalApiJwt` project using a <xref:System.Net.Http.DelegatingHandler> (`TokenHandler`) that attaches the access token from  the <xref:Microsoft.AspNetCore.Http.HttpContext> to the request.
+  * When rendering the `Weather` component on the server, the component uses the `ServerWeatherForecaster` on the server to obtain weather data from the web API in the `MinimalApiJwt` project using a <xref:System.Net.Http.DelegatingHandler> (`TokenHandler`) that attaches the access token from the <xref:Microsoft.AspNetCore.Http.HttpContext> to the request.
   * When the component is rendered on the client, the component uses the `ClientWeatherForecaster` service implementation, which uses a preconfigured <xref:System.Net.Http.HttpClient> (in the client project's `Program` file) to make the web API call from the server project's `ServerWeatherForecaster`.
 
 :::moniker range=">= aspnetcore-9.0"
@@ -114,7 +116,17 @@ The `MinimalApiJwt` project is a backend web API for multiple frontend projects.
 
 The `MinimalApiJwt.http` file can be used for testing the weather data request. Note that the `MinimalApiJwt` project must be running to test the endpoint, and the endpoint is hardcoded into the file. For more information, see <xref:test/http-files>.
 
+:::moniker range=">= aspnetcore-9.0"
+
+The project includes packages and configuration to produce [OpenAPI documents](xref:fundamentals/openapi/overview).
+
+:::moniker-end
+
+:::moniker range="< aspnetcore-9.0"
+
 The project includes packages and configuration to produce [OpenAPI documents](xref:fundamentals/openapi/overview) and the [Swagger UI](https://swagger.io/api-hub/) in the Development environment. For more information, see <xref:fundamentals/openapi/using-openapi-documents#use-swagger-ui-for-local-ad-hoc-testing>.
+
+:::moniker-end
 
 The project creates a [Minimal API](xref:fundamentals/minimal-apis) endpoint for weather data:
 
@@ -193,9 +205,13 @@ public class TokenHandler(IHttpContextAccessor httpContextAccessor) :
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var accessToken = httpContextAccessor.HttpContext?
-            .GetTokenAsync("access_token").Result ?? 
-            throw new Exception("No access token");
+        if (httpContextAccessor.HttpContext is null)
+        {
+            throw new Exception("HttpContext not available");
+        }
+
+        var accessToken = await httpContextAccessor.HttpContext
+            .GetTokenAsync("access_token");
 
         request.Headers.Authorization =
             new AuthenticationHeaderValue("Bearer", accessToken);
@@ -447,7 +463,17 @@ The `MinimalApiJwt` project is a backend web API for multiple frontend projects.
 
 The `MinimalApiJwt.http` file can be used for testing the weather data request. Note that the `MinimalApiJwt` project must be running to test the endpoint, and the endpoint is hardcoded into the file. For more information, see <xref:test/http-files>.
 
+:::moniker range=">= aspnetcore-9.0"
+
+The project includes packages and configuration to produce [OpenAPI documents](xref:fundamentals/openapi/overview).
+
+:::moniker-end
+
+:::moniker range="< aspnetcore-9.0"
+
 The project includes packages and configuration to produce [OpenAPI documents](xref:fundamentals/openapi/overview) and the [Swagger UI](https://swagger.io/api-hub/) in the Development environment. For more information, see <xref:fundamentals/openapi/using-openapi-documents#use-swagger-ui-for-local-ad-hoc-testing>.
+
+:::moniker-end
 
 The project creates a [Minimal API](xref:fundamentals/minimal-apis) endpoint for weather data:
 
@@ -526,9 +552,13 @@ public class TokenHandler(IHttpContextAccessor httpContextAccessor) :
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var accessToken = httpContextAccessor.HttpContext?
-            .GetTokenAsync("access_token").Result ?? 
-            throw new Exception("No access token");
+        if (httpContextAccessor.HttpContext is null)
+        {
+            throw new Exception("HttpContext not available");
+        }
+
+        var accessToken = await httpContextAccessor.HttpContext
+            .GetTokenAsync("access_token");
 
         request.Headers.Authorization =
             new AuthenticationHeaderValue("Bearer", accessToken);
@@ -554,11 +584,9 @@ The `Weather` component uses the [`[Authorize]` attribute](xref:Microsoft.AspNet
 The `ExternalApi` HTTP client is used to make a request for weather data to the secure web API. In the [`OnInitializedAsync` lifecycle event](xref:blazor/components/lifecycle#component-initialization-oninitializedasync) of `Weather.razor`:
 
 ```csharp
-var request = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
+using var request = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
 var client = ClientFactory.CreateClient("ExternalApi");
-
-var response = await client.SendAsync(request);
-
+using var response = await client.SendAsync(request);
 response.EnsureSuccessStatusCode();
 
 forecasts = await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
@@ -840,7 +868,17 @@ The `MinimalApiJwt` project is a backend web API for multiple frontend projects.
 
 The `MinimalApiJwt.http` file can be used for testing the weather data request. Note that the `MinimalApiJwt` project must be running to test the endpoint, and the endpoint is hardcoded into the file. For more information, see <xref:test/http-files>.
 
+:::moniker range=">= aspnetcore-9.0"
+
+The project includes packages and configuration to produce [OpenAPI documents](xref:fundamentals/openapi/overview).
+
+:::moniker-end
+
+:::moniker range="< aspnetcore-9.0"
+
 The project includes packages and configuration to produce [OpenAPI documents](xref:fundamentals/openapi/overview) and the [Swagger UI](https://swagger.io/api-hub/) in the Development environment. For more information, see <xref:fundamentals/openapi/using-openapi-documents#use-swagger-ui-for-local-ad-hoc-testing>.
+
+:::moniker-end
 
 A secure weather forecast data endpoint is in the project's `Program` file:
 
@@ -1435,3 +1473,4 @@ At this point, Razor components can adopt [role-based and policy-based authoriza
 * [Manage authentication state in Blazor Web Apps](xref:blazor/security/index#manage-authentication-state-in-blazor-web-apps)
 * [Refresh token during http request in Blazor Interactive Server with OIDC (`dotnet/aspnetcore` #55213)](https://github.com/dotnet/aspnetcore/issues/55213)
 * [Secure data in Blazor Web Apps with Interactive Auto rendering](xref:blazor/security/index#secure-data-in-blazor-web-apps-with-interactive-auto-rendering)
+* [How to access an `AuthenticationStateProvider` from a `DelegatingHandler`](xref:blazor/security/additional-scenarios#access-authenticationstateprovider-in-outgoing-request-middleware)

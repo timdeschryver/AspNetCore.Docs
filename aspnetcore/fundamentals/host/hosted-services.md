@@ -5,7 +5,7 @@ description: Learn how to implement background tasks with hosted services in ASP
 monikerRange: '>= aspnetcore-3.1'
 ms.author: tdykstra
 ms.custom: mvc
-ms.date: 5/10/2024
+ms.date: 05/28/2025
 uid: fundamentals/host/hosted-services
 ---
 # Background tasks with hosted services in ASP.NET Core
@@ -119,7 +119,7 @@ The services are registered in `IHostBuilder.ConfigureServices` (`Program.cs`). 
 
 ## Queued background tasks
 
-A background task queue is based on the .NET 4.x <xref:System.Web.Hosting.HostingEnvironment.QueueBackgroundWorkItem%2A>:
+A background task queue is based on the .NET Framework 4.x <xref:System.Web.Hosting.HostingEnvironment.QueueBackgroundWorkItem%2A>:
 
 :::code language="csharp" source="~/fundamentals/host/hosted-services/samples/6.0/BackgroundTasksSample/Services/BackgroundTaskQueue.cs" id="snippet1":::
 
@@ -168,16 +168,6 @@ The Worker Service templates support [.NET native ahead-of-time (AOT)](/dotnet/c
   1. Choose a **Framework**.
   1. Check the **Enable Native AOT publish** checkbox.
   1. Select **Create**.
-
-<!--
-# [Visual Studio for Mac](#tab/visual-studio-mac)
-
-1. Create a new project.
-1. Select **App** under **.NET Core** in the sidebar.
-1. Select **Worker** under **ASP.NET Core**. Select **Next**.
-1. Select **.NET Core 3.1** or later for the **Target Framework**. Select **Next**.
-1. Provide a name in the **Project Name** field. Select **Create**.
--->
 
 # [.NET CLI](#tab/net-cli)
 

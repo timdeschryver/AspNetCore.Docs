@@ -2,7 +2,7 @@
 
 The server app is a standard ASP.NET Core app. See the [ASP.NET Core logging guidance](xref:fundamentals/logging/index) to enable a lower logging level in the server app.
 
-To enable debug or trace logging for Blazor WebAssembly authentication, see the *Client-side authentication logging* section of <xref:blazor/fundamentals/logging> with the article version selector set to ASP.NET Core 7.0 or later.
+To enable debug or trace logging for Blazor WebAssembly authentication, see the *Client-side authentication logging* section of <xref:blazor/fundamentals/logging> with the article version selector set to ASP.NET Core in .NET 7 or later.
 
 ### Common errors
 
@@ -93,7 +93,7 @@ One approach to prevent lingering cookies and site data from interfering with te
 
 ### App upgrades
 
-A functioning app may fail immediately after upgrading either the .NET Core SDK on the development machine or changing package versions within the app. In some cases, incoherent packages may break an app when performing major upgrades. Most of these issues can be fixed by following these instructions:
+A functioning app may fail immediately after upgrading either the .NET SDK on the development machine or changing package versions within the app. In some cases, incoherent packages may break an app when performing major upgrades. Most of these issues can be fixed by following these instructions:
 
 1. Clear the local system's NuGet package caches by executing [`dotnet nuget locals all --clear`](/dotnet/core/tools/dotnet-nuget-locals) from a command shell.
 1. Delete the project's `bin` and `obj` folders.
@@ -103,9 +103,16 @@ A functioning app may fail immediately after upgrading either the .NET Core SDK 
 > [!NOTE]
 > Use of package versions incompatible with the app's target framework isn't supported. For information on a package, use the [NuGet Gallery](https://www.nuget.org).
 
-### Run the server app
+### Start the solution from the correct project
 
-When testing and troubleshooting Blazor Web App, make sure that you're running the app from the server project.
+Blazor Web Apps:
+
+* For one of the Backend-for-Frontend (BFF) pattern samples, start the solution from the ***`Aspire/Aspire.AppHost` project***.
+* For one of the non-BFF pattern samples, start the solution from the ***server project***.
+
+Blazor Server:
+
+Start the solution from the ***server project***.
 
 ### Inspect the user
 

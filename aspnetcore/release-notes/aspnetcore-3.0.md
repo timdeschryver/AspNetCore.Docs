@@ -1,8 +1,8 @@
 ---
 title: What's new in ASP.NET Core 3.0
-author: rick-anderson
+author: wadepickett
 description: Learn about the new features in ASP.NET Core 3.0.
-ms.author: riande
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 12/05/2019
 uid: aspnetcore-3.0
@@ -126,7 +126,7 @@ connection.onreconnected((connectionId) => {
 });
 ```
 
-SignalR 3.0 and later provides a custom resource to authorization handlers when a hub method requires authorization. The resource is an instance of `HubInvocationContext`. The `HubInvocationContext` includes the:
+SignalR 3.0 or later provides a custom resource to authorization handlers when a hub method requires authorization. The resource is an instance of `HubInvocationContext`. The `HubInvocationContext` includes the:
 
 * `HubCallerContext`
 * Name of the hub method being invoked.

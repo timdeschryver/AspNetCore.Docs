@@ -8,7 +8,7 @@ For more information, see <xref:performance/caching/memory> and [Troubleshoot Az
 
 ## Distributed Cache
 
-Use a distributed cache to store data when the app is hosted in a cloud or server farm. The cache is shared across the servers that process requests. A client can submit a request that's handled by any server in the group if cached data for the client is available. ASP.NET Core works with SQL Server, [Redis](https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis), and [NCache](https://www.nuget.org/packages/Alachisoft.NCache.OpenSource.SDK/) distributed caches.
+Use a distributed cache to store data when the app is hosted in a cloud or server farm. The cache is shared across the servers that process requests. A client can submit a request that's handled by any server in the group if cached data for the client is available. ASP.NET Core works with SQL Server, [Redis](https://www.nuget.org/packages/Microsoft.Extensions.Caching.StackExchangeRedis), [Postgres](https://www.nuget.org/packages/Microsoft.Extensions.Caching.Postgres), and [NCache](https://www.nuget.org/packages/Alachisoft.NCache.OpenSource.SDK/) distributed caches.
 
 For more information, see <xref:performance/caching/distributed>.
 
@@ -34,6 +34,6 @@ For more information, see <xref:mvc/views/tag-helpers/builtin-th/distributed-cac
 
 ## Output caching
 
-[Output caching](xref:performance/caching/overview?view=aspnetcore-7.0#oc7) is available in .NET 7 and later.
+[Output caching](xref:performance/caching/overview?view=aspnetcore-7.0#oc7) is available in .NET 7 or later.
 
 :::moniker-end

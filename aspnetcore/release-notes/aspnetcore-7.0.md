@@ -1,15 +1,15 @@
 ---
-title: What's new in ASP.NET Core 7.0
-author: rick-anderson
-description: Learn about the new features in ASP.NET Core 7.0.
-ms.author: riande
+title: What's new in ASP.NET Core in .NET 7
+author: wadepickett
+description: Learn about the new features in ASP.NET Core in .NET 7.
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 11/07/2022
 uid: aspnetcore-7
 ---
-# What's new in ASP.NET Core 7.0
+# What's new in ASP.NET Core in .NET 7
 
-This article highlights the most significant changes in ASP.NET Core 7.0 with links to relevant documentation.
+This article highlights the most significant changes in ASP.NET Core in .NET 7 with links to relevant documentation.
 
 ## Rate limiting middleware in ASP.NET Core
 
@@ -53,7 +53,7 @@ In rare cases, automatic DI can break apps that have a type in DI that is also a
 
 [!code-csharp[](~/release-notes/aspnetcore-7/samples/ApiController/Program.cs?name=snippet_dis&highlight=8-11)]
 
-In ASP.NET Core 7.0, types in DI are checked at app startup with <xref:Microsoft.Extensions.DependencyInjection.IServiceProviderIsService> to determine if an argument in an API controller action comes from DI or from the other sources.
+In .NET 7, types in DI are checked at app startup with <xref:Microsoft.Extensions.DependencyInjection.IServiceProviderIsService> to determine if an argument in an API controller action comes from DI or from the other sources.
 
 The new mechanism to infer binding source of API Controller action parameters uses the following rules:
 
@@ -611,7 +611,9 @@ Apps using <!--keep--> [EventSource](/dotnet/api/system.diagnostics.tracing.even
 
 ### New ServerReady event for measuring startup time
 
-The [`ServerReady`](https://github.com/dotnet/aspnetcore/blob/v7.0.0-preview.5.22303.8/src/Hosting/Hosting/src/Internal/HostingEventSource.cs#L75-L79) event has been added to measure [startup time](https://github.com/dotnet/aspnetcore/blob/v7.0.0-preview.5.22303.8/src/Hosting/Hosting/src/GenericHost/GenericWebHostService.cs#L138) of ASP.NET Core apps.
+The [`ServerReady`](https://github.com/dotnet/aspnetcore/blob/main/src/Hosting/Hosting/src/Internal/HostingEventSource.cs#L76-L79) event has been added to measure [startup time](https://github.com/dotnet/aspnetcore/blob/main/src/Hosting/Hosting/src/GenericHost/GenericWebHostService.cs#L162) of ASP.NET Core apps.
+
+[!INCLUDE[](~/includes/aspnetcore-repo-ref-source-links.md)]
 
 ## IIS
 

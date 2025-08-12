@@ -5,7 +5,7 @@ description: Learn about using HTTP/3 with Kestrel, the cross-platform web serve
 monikerRange: '>= aspnetcore-6.0'
 ms.author: wigodbe
 ms.custom: mvc, linux-related-content
-ms.date: 08/24/2023
+ms.date: 06/08/2025
 uid: fundamentals/servers/kestrel/http3
 ---
 
@@ -15,7 +15,7 @@ uid: fundamentals/servers/kestrel/http3
 
 :::moniker range=">= aspnetcore-8.0"
 
-[HTTP/3](https://datatracker.ietf.org/doc/rfc9114/) is an approved standard and the third major version of HTTP. This article discusses the requirements for HTTP/3. HTTP/3 is fully supported in ASP.NET Core 7.0 and later.
+[HTTP/3](https://datatracker.ietf.org/doc/rfc9114/) is an approved standard and the third major version of HTTP. This article discusses the requirements for HTTP/3. HTTP/3 is fully supported in .NET 7 or later.
 
 > [!IMPORTANT]
 > Apps configured to take advantage of HTTP/3 should be designed to also support HTTP/1.1 and HTTP/2.
@@ -27,18 +27,14 @@ uid: fundamentals/servers/kestrel/http3
 * Is the latest version of the Hypertext Transfer Protocol.
 * Builds on the strengths of `HTTP/2` while addressing some of its limitations, particularly in terms of performance, latency, reliability, and security.
 
-+---------------+-------------------------+-------------------------+
-| Feature | `HTTP/2` | `HTTP/3` |
-+---------------+-------------------------+-------------------------+
-| Transport | Uses [TCP](https://developer.mozilla.org/docs/Glossary/TCP) | Uses [QUIC](https://www.rfc-editor.org/rfc/rfc9000.html)  |
-| Layer | | |
-| Connection | Slower due to TCP + TLS | Faster with 0-RTT QUIC |
-| Setup | handshake | handshakes |
-| Head-of-Line | Affected by TCP-level | Eliminated with QUIC |
-| Blocking | blocking | stream multiplexing |
-| Encryption | TLS over TCP | TLS is built into QUIC |
-+---------------+-------------------------+-------------------------+
-
+| Feature      | `HTTP/2`                                                    | `HTTP/3`                                                 |
+|--------------|-------------------------------------------------------------|----------------------------------------------------------|
+| Transport    | Uses [TCP](https://developer.mozilla.org/docs/Glossary/TCP) | Uses [QUIC](https://www.rfc-editor.org/rfc/rfc9000.html) |
+| Connection   | Slower due to TCP + TLS                                     | Faster with 0-RTT QUIC                                   |
+| Setup        | handshake                                                   | handshakes                                               |
+| Head-of-Line | Affected by TCP-level                                       | Eliminated with QUIC                                     |
+| Blocking     | blocking                                                    | stream multiplexing                                      |
+| Encryption   | TLS over TCP                                                | TLS is built into QUIC                                   |
 
 The key differences from `HTTP/2` to `HTTP/3` are:
 

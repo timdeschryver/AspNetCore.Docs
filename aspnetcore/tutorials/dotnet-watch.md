@@ -43,7 +43,7 @@ Navigate to the product API (`http://localhost:<port number>/api/math/product?a=
 
 ## Add `dotnet watch` to a project
 
-The `dotnet watch` file watcher tool is included with version 2.1.300 of the .NET Core SDK. The following steps are required when using an earlier version of the .NET Core SDK.
+The `dotnet watch` file watcher tool is included with version 2.1.300 of the .NET SDK. The following steps are required when using an earlier version of the .NET SDK.
 
 1. Add a `Microsoft.DotNet.Watcher.Tools` package reference to the `.csproj` file:
 
@@ -223,7 +223,7 @@ Some configuration options can be passed to `dotnet watch` through environment v
 
 ## Non-ASCII characters
 
-Visual Studio 17.2 and later includes the .NET SDK 6.0.300 and later. With the .NET SDK and 6.0.300 later, `dotnet-watch` emits non-ASCII characters to the console during a hot reload session. On certain console hosts, such as the Windows conhost, these characters may appear garbled. To avoid garbled characters, consider one of the following approaches:
+Visual Studio 17.2 or later includes the .NET SDK 6.0.300 or later. With the .NET SDK and 6.0.300 later, `dotnet-watch` emits non-ASCII characters to the console during a hot reload session. On certain console hosts, such as the Windows conhost, these characters may appear garbled. To avoid garbled characters, consider one of the following approaches:
 
 * Configure the `DOTNET_WATCH_SUPPRESS_EMOJIS=1` environment variable to suppress emitting these values.
 * Switch to a different terminal, such as https://github.com/microsoft/terminal, that  supports rendering non-ASCII characters.

@@ -1,19 +1,17 @@
 ---
-title: What's new in ASP.NET Core 10.0
-author: rick-anderson
-description: Learn about the new features in ASP.NET Core 10.0.
-ms.author: riande
+title: What's new in ASP.NET Core in .NET 10
+author: wadepickett
+description: Learn about the new features in ASP.NET Core in .NET 10.
+ms.author: wpickett
 ms.custom: mvc
-ms.date: 4/12/2025
+ms.date: 7/18/2025
 uid: aspnetcore-10
 ---
-# What's new in ASP.NET Core 10.0
+# What's new in ASP.NET Core in .NET 10
 
-This article highlights the most significant changes in ASP.NET Core 10.0 with links to relevant documentation.
+This article highlights the most significant changes in ASP.NET Core in .NET 10 with links to relevant documentation.
 
 This article will be updated as new preview releases are made available. For breaking changes, see [Breaking changes in .NET](/dotnet/core/compatibility/breaking-changes).
-
-<!-- New content should be added to ~/aspnetcore-9/includes/newFeatureName.md files. This will help prevent merge conflicts in this file. -->
 
 ## Blazor
 
@@ -41,7 +39,11 @@ This section describes new features for minimal APIs.
 
 [!INCLUDE[](~/release-notes/aspnetcore-10/includes/MinimalAPIValidationRecordTypes.md)]
 
+[!INCLUDE[](~/release-notes/aspnetcore-10/includes/validation-with-problem.md)]
+
 [!INCLUDE[](~/release-notes/aspnetcore-10/includes/sse.md)]
+
+[!INCLUDE[](~/release-notes/aspnetcore-10/includes/validation-package-move.md)]
 
 ## OpenAPI
 
@@ -61,13 +63,9 @@ This section describes new features for OpenAPI.
 
 [!INCLUDE[](~/release-notes/aspnetcore-10/includes/OpenApiSchemasInTransformers.md)]
 
-[!INCLUDE[](~/release-notes/aspnetcore-10/includes/OpenApiNetUpdatePrev17.md)]
+[!INCLUDE[](~/release-notes/aspnetcore-10/includes/OpenApiNetUpdatePrev.md)]
 
-### Authentication and authorization
-
-This section describes new features for authentication and authorization.
-
-### Authentication and authorization metrics
+## Authentication and authorization metrics
 
 Metrics have been added for certain authentication and authorization events in ASP.NET Core. With this change, you can now obtain metrics for the following events:
 
@@ -84,14 +82,17 @@ The following image shows an example of the Authenticated request duration metri
 
 ![Authenticated request duration in the Aspire dashboard](https://github.com/user-attachments/assets/170615e9-ef25-48a1-a482-4933e2e03f03)
 
-For more information, see [ASP.NET Core Authorization and Authentication metrics](xref:log-mon/metrics/built-in#microsoftaspnetcoreauthorization).
+For more information, see <xref:log-mon/metrics/built-in#microsoftaspnetcoreauthorization>.
 
 ## Miscellaneous
 
-This section describes miscellaneous new features in ASP.NET Core 10.0.
+This section describes miscellaneous new features in .NET 10.
+
+[!INCLUDE[](~/release-notes/aspnetcore-10/includes/memory-eviction.md)]
+
+[!INCLUDE[](~/release-notes/aspnetcore-10/includes/httpsys.md)]
 
 [!INCLUDE[](~/release-notes/aspnetcore-10/includes/testAppsTopLevel.md)]
-
 
 [!INCLUDE[](~/release-notes/aspnetcore-10/includes/jsonPatch.md)]
 
@@ -116,3 +117,5 @@ if (RedirectHttpResult.IsLocalUrl(url))
 Thank you [@martincostello](https://github.com/martincostello) for this contribution!
 
 ## Related content
+
+<xref:fundamentals/servers/httpsys>

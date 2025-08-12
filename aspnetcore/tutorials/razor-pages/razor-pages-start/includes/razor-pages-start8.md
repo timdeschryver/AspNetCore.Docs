@@ -21,10 +21,6 @@ At the end of this tutorial, you'll have a Razor Pages web app that manages a da
 
 [!INCLUDE[](~/includes/net-prereqs-vsc-8.0.md)]
 
-# [Visual Studio for Mac](#tab/visual-studio-mac)
-
-[!INCLUDE[](~/includes/net-prereqs-mac-8.0.md)]
-
 ---
 
 ## Create a Razor Pages web app
@@ -67,24 +63,6 @@ The tutorial assumes familiarity with VS Code. For more information, see [Gettin
 
 [!INCLUDE[](~/includes/vscode-trust-authors-add-assets.md)]
 
-# [Visual Studio for Mac](#tab/visual-studio-mac)
-
-* In Visual Studio for Mac 2022, select **File** > **New Project...**.
-
-* In the **Choose a template for your new project** dialog:
-  * Select **Web and Console** > **App** > **Web Application**.
-  * Select **Continue**.
-
-* In the **Configure your new Web Application** dialog:
-  * Verify: **Target framework** is set to **.NET 8.0** (or later).
-  * Verify: **Authentication** is set to **No Authentication**.
-  * Verify: **Do not use top-level statements** is unchecked.
-  * Select **Continue**.
-
-* In the **Configure your new Web Application** dialog:
-  * Enter `RazorPagesMovie` for **Project name**. It's important to name the project **RazorPagesMovie**, including matching the capitalization, so the namespaces will match when you copy and paste example code.
-  * Select **Create**.
-
 ---
 
 ## Run the app
@@ -97,13 +75,13 @@ Select **RazorPagesMovie** in **Solution Explorer**, and then press <kbd>Ctrl</k
 
 Visual Studio displays the following dialog when a project is not yet configured to use SSL:
 
-![This project is configured to use SSL. To avoid SSL warnings in the browser you can choose to trust the self-signed certificate that IIS Express has generated. Would you like to trust the IIS Express SSL certificate?](~/getting-started/_static/trustCertVS22.png)
+![This project is configured to use SSL. To avoid SSL warnings in the browser you can choose to trust the self-signed certificate that IIS Express has generated. Would you like to trust the IIS Express SSL certificate?](~/static/trustCertVS22.png)
 
 Select **Yes** if you trust the IIS Express SSL certificate.
 
 The following dialog is displayed:
 
-![Security warning dialog](~/getting-started/_static/cert.png)
+![Security warning dialog](~/static/cert.png)
 
 Select **Yes** if you agree to trust the development certificate.
 
@@ -131,14 +109,6 @@ The default browser launched with the following URL: `https://localhost:<port>` 
 Close the browser window.
 
 In Visual Studio Code, from the *Run* menu, select *Stop Debugging* or press <kbd>Shift</kbd>+<kbd>F5</kbd> to stop the app.
-
-# [Visual Studio for Mac](#tab/visual-studio-mac)
-
-Select **Debug** > **Start Debugging** to launch the app.
-
-Visual Studio for Mac launches a browser and navigates to `https://localhost:<port>`, where `<port>` is the port number randomly assigned at project creation and is set in `Properties/launchSettings.json`.
-
-Close the browser window.
 
 ---
 

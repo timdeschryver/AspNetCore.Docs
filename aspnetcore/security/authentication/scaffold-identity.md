@@ -1,9 +1,9 @@
 ---
 title: Scaffold Identity in ASP.NET Core projects
-author: rick-anderson
+author: wadepickett
 description: Learn how to scaffold Identity in an ASP.NET Core project.
 monikerRange: '>= aspnetcore-3.1'
-ms.author: riande
+ms.author: wpickett
 ms.custom: mvc
 ms.date: 07/22/2024
 uid: security/authentication/scaffold-identity
@@ -952,6 +952,6 @@ To prevent publishing static Identity assets to the web root, see <xref:security
 
 ## Additional resources
 
-[Changes to authentication code to ASP.NET Core 2.1 and later](xref:migration/20_21#changes-to-authentication-code)
+[Changes to authentication code to ASP.NET Core 2.1 or later](xref:migration/20_21#changes-to-authentication-code)
 
 :::moniker-end

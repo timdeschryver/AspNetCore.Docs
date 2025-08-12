@@ -410,7 +410,7 @@ A typed client can be defined that handles all of the HTTP and token acquisition
 ```csharp
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using static {ASSEMBLY NAME}.Data;
+using static {PACKAGE ID/ASSEMBLY NAME}.Data;
 
 public class WeatherForecastClient(HttpClient http)
 {
@@ -433,7 +433,7 @@ public class WeatherForecastClient(HttpClient http)
 }
 ```
 
-In the preceding example, the `WeatherForecast` type is a static class that holds weather forecast data. The `{ASSEMBLY NAME}` placeholder is the app's assembly name (for example, `using static BlazorSample.Data;`).
+In the preceding example, the `WeatherForecast` type is a static class that holds weather forecast data. The `{PACKAGE ID/ASSEMBLY NAME}` placeholder is the project's package ID (`<PackageId>` in the project file) for a library or assembly name for an app (for example, `using static BlazorSample.Data;`).
 
 In the following example, <xref:Microsoft.Extensions.DependencyInjection.HttpClientFactoryServiceCollectionExtensions.AddHttpClient%2A?displayProperty=nameWithType> is an extension in <xref:Microsoft.Extensions.Http?displayProperty=fullName>. Add the package to an app that doesn't already reference it.
 
@@ -1361,7 +1361,7 @@ To configure a Blazor WebAssembly app to use the [ASP.NET Core gRPC framework](x
 :::moniker range=">= aspnetcore-8.0"
 
 > [!NOTE]
-> Prerendering is enabled by default in Blazor Web Apps, so you must account for the component rendering first from the server and then from the client. Any prerendered state should flow to the client so that it can be reused. For more information, see <xref:blazor/components/prerender#persist-prerendered-state>.
+> Prerendering is enabled by default in Blazor Web Apps, so you must account for the component rendering first from the server and then from the client. Any prerendered state should flow to the client so that it can be reused. For more information, see <xref:blazor/state-management/prerendered-state-persistence>.
 
 :::moniker-end
 
@@ -1544,7 +1544,7 @@ For more information, see [`AuthenticationService.ts` in the `dotnet/aspnetcore`
 
 If an app requires a custom version of the [Microsoft Authentication Library for JavaScript (`MSAL.js`)](https://www.npmjs.com/package/@azure/msal-browser), perform the following steps:
 
-1. Confirm the system has the latest developer .NET SDK or obtain and install the latest developer SDK from [.NET Core SDK: Installers and Binaries](https://github.com/dotnet/installer#installers-and-binaries). Configuration of internal NuGet feeds isn't required for this scenario.
+1. Confirm the system has the latest developer .NET SDK or obtain and install the latest developer SDK from [.NET SDK: Installers and Binaries](https://github.com/dotnet/sdk#installing-the-sdk). Configuration of internal NuGet feeds isn't required for this scenario.
 1. Set up the `dotnet/aspnetcore` GitHub repository for development following the documentation at [Build ASP.NET Core from Source](https://github.com/dotnet/aspnetcore/blob/main/docs/BuildFromSource.md). Fork and clone or download a ZIP archive of the [`dotnet/aspnetcore` GitHub repository](https://github.com/dotnet/aspnetcore).
 1. Open the `src/Components/WebAssembly/Authentication.Msal/src/Interop/package.json` file and set the desired version of `@azure/msal-browser`. For a list of released versions, visit the [`@azure/msal-browser` npm website](https://www.npmjs.com/package/@azure/msal-browser) and select the **Versions** tab.
 1. Build the `Authentication.Msal` project in the `src/Components/WebAssembly/Authentication.Msal/src` folder with the `yarn build` command in a command shell.

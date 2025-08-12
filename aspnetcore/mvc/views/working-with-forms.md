@@ -1,8 +1,8 @@
 ---
 title: Tag Helpers in forms in ASP.NET Core
-author: rick-anderson
+author: tdykstra
 description: Describes the built-in Tag Helpers used with Forms.
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 12/05/2019
 uid: mvc/views/working-with-forms
@@ -50,7 +50,7 @@ The `asp-route` Tag Helper attribute can also generate markup for the HTML `acti
 
 [!code-cshtml[](../../mvc/views/working-with-forms/sample/final/Views/Demo/RegisterRoute.cshtml)]
 
-Many of the views in the *Views/Account* folder (generated when you create a new web app with *Individual User Accounts*) contain the [asp-route-returnurl](xref:mvc/views/working-with-forms) attribute:
+Many of the views in the *Views/Account* folder (generated when you create a new web app with *Individual Accounts*) contain the [asp-route-returnurl](xref:mvc/views/working-with-forms) attribute:
 
 ```cshtml
 <form asp-controller="Account" asp-action="Login"

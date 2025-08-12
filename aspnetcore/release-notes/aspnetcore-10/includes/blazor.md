@@ -1,14 +1,19 @@
 ### New and updated Blazor Web App security samples
 
-We've added and updated Blazor Web App security samples cross-linked in the following articles:
+We've added and updated the Blazor Web App security samples linked in the following articles:
 
-* <xref:blazor/security/blazor-web-app-oidc>
-* <xref:blazor/security/blazor-web-app-entra>
-* <xref:blazor/security/blazor-web-app-windows-authentication>
+* <xref:blazor/security/blazor-web-app-oidc?view=aspnetcore-10.0>
+* <xref:blazor/security/blazor-web-app-entra?view=aspnetcore-10.0>
+* <xref:blazor/security/blazor-web-app-windows-authentication?view=aspnetcore-10.0>
 
 All of our OIDC and Entra sample solutions now include a separate web API project (`MinimalApiJwt`) to demonstrate how to configure and call an external web API securely. Calling web APIs is demonstrated with a token handler and named HTTP client for an OIDC identity provider or Microsoft Identity Web packages/API for Microsoft Entra ID.
 
 The sample solutions are configured in C# code in their `Program` files. To configure the solutions from app settings files (for example, `appsettings.json`) see the ***new*** *Supply configuration with the JSON configuration provider (app settings)* section of the OIDC or Entra articles.
+
+Our Entra article and sample apps also include new guidance on the following approaches:
+
+* How to use an encrypted distributed token cache for web farm hosting scenarios.
+* How to use [Azure Key Vault](https://azure.microsoft.com/products/key-vault/) with [Azure Managed Identities](/entra/identity/managed-identities-azure-resources/overview) for data protection.
 
 ### QuickGrid `RowClass` parameter
 
@@ -73,7 +78,7 @@ public class CustomNavLink : NavLink
 }
 ```
 
-For more information, see <xref:blazor/fundamentals/routing#navlink-component>.
+For more information, see <xref:blazor/fundamentals/routing?view=aspnetcore-10.0#navlink-component>.
 
 ### Close `QuickGrid` column options
 
@@ -108,10 +113,6 @@ In prior Blazor releases, response streaming for <xref:System.Net.Http.HttpClien
 
 This is a breaking change because calling <xref:System.Net.Http.HttpContent.ReadAsStreamAsync%2A?displayProperty=nameWithType> for an <xref:System.Net.Http.HttpResponseMessage.Content%2A?displayProperty=nameWithType> (`response.Content.ReadAsStreamAsync()`) returns a `BrowserHttpReadStream` and no longer a <xref:System.IO.MemoryStream>. `BrowserHttpReadStream` doesn't support synchronous operations, such as `Stream.Read(Span<Byte>)`. If your code uses synchronous operations, you can opt-out of response streaming or copy the <xref:System.IO.Stream> into a <xref:System.IO.MemoryStream> yourself.
 
-<!-- UNCOMMENT FOR PREVIEW 5 ...
-     Waiting on https://github.com/dotnet/runtime/issues/97449
-     ... and update the Call web API article Line 983
-
 To opt-out of response streaming globally, use either of the following approaches:
 
 * Add the `<WasmEnableStreamingResponse>` property to the project file with a value of `false`:
@@ -121,12 +122,6 @@ To opt-out of response streaming globally, use either of the following approache
   ```
 
 * Set the `DOTNET_WASM_ENABLE_STREAMING_RESPONSE` environment variable to `false` or `0`.
-
-............. AND REMOVE THE NEXT LINE .............
-
--->
-
-To opt-out of response streaming globally, set the `DOTNET_WASM_ENABLE_STREAMING_RESPONSE` environment variable to `false` or `0`.
 
 To opt-out of response streaming for an individual request, set <xref:Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageExtensions.SetBrowserResponseStreamingEnabled%2A> to `false` on the <xref:System.Net.Http.HttpRequestMessage> (`requestMessage` in the following example):
 
@@ -142,7 +137,7 @@ Last year, the release of .NET 9 introduced [server-side fingerprinting](https:/
 
 In standalone Blazor WebAssembly apps during build/publish, the framework overrides placeholders in `index.html` with values computed during build to fingerprint static assets. A fingerprint is placed into the `blazor.webassembly.js` script file name.
 
-The following markup must be present in the `wwwwoot/index.html` file to adopt the fingerprinting feature:
+The following markup must be present in the `wwwroot/index.html` file to adopt the fingerprinting feature:
 
 ```diff
 <head>
@@ -299,7 +294,7 @@ else
 }
 ```
 
-State can be serialized for multiple components of the same type, and you can establish declarative state in a service for use around the app by calling `RegisterPersistentService` on the Razor components builder (<xref:Microsoft.Extensions.DependencyInjection.RazorComponentsServiceCollectionExtensions.AddRazorComponents%2A>) with a custom service type and render mode. For more information, see <xref:blazor/components/prerender?view=aspnetcore-10.0#persist-prerendered-state>.
+State can be serialized for multiple components of the same type, and you can establish declarative state in a service for use around the app by calling `RegisterPersistentService` on the Razor components builder (<xref:Microsoft.Extensions.DependencyInjection.RazorComponentsServiceCollectionExtensions.AddRazorComponents%2A>) with a custom service type and render mode. For more information, see <xref:blazor/state-management/prerendered-state-persistence?view=aspnetcore-10.0>.
 
 ### New JavaScript interop features
 
@@ -385,28 +380,197 @@ Calling <xref:Microsoft.AspNetCore.Components.NavigationManager.NavigateTo%2A?di
 
 Code that relied on <xref:Microsoft.AspNetCore.Components.NavigationException> being thrown should be updated. For example, in the default Blazor Identity UI, the `IdentityRedirectManager` previously threw an <xref:System.InvalidOperationException> after calling `RedirectTo` to ensure it wasn't invoked during interactive rendering. This exception and the [`[DoesNotReturn]` attributes](xref:System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute) should now be removed.
 
-<!-- HOLD FOR PREVIEW 5
-
 To revert to the previous behavior of throwing a <xref:Microsoft.AspNetCore.Components.NavigationException>, set the following <xref:System.AppContext> switch:
 
 ```csharp
 AppContext.SetSwitch(
-    "Microsoft.AspNetCore.Components.Endpoints.NavigationManager.EnableThrowNavigationException", 
-    isEnabled: true);
+    "Microsoft.AspNetCore.Components.Endpoints.NavigationManager.DisableThrowNavigationException", 
+    isEnabled: false);
 ```
 
--->
+### Blazor router has a `NotFoundPage` parameter
+
+Blazor now provides an improved way to display a "Not Found" page when navigating to a non-existent page. You can specify a page to render when `NavigationManager.NotFound` (described in the next section) is invoked by passing a page type to the `Router` component using the `NotFoundPage` parameter. This approach is recommended over using the [`NotFound` render fragment](xref:Microsoft.AspNetCore.Components.Routing.Router.NotFound%2A) (`<NotFound>...</NotFound>`), as it supports routing, works across code Status Code Pages Re-execution Middleware, and is compatible even with non-Blazor scenarios. If both a `NotFound` render fragment and `NotFoundPage` are defined, the page specified by `NotFoundPage` takes priority.
+
+```razor
+<Router AppAssembly="@typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>This content is ignored because NotFoundPage is defined.</NotFound>
+</Router>
+```
+
+The Blazor project template now includes a `NotFound.razor` page by default. This page automatically renders whenever `NavigationManager.NotFound` is called in your app, making it easier to handle missing routes with a consistent user experience.
+
+For more information, see <xref:blazor/fundamentals/routing?view=aspnetcore-10.0#not-found-responses>.
 
 ### Not Found responses using `NavigationManager` for static SSR and global interactive rendering
 
 The <xref:Microsoft.AspNetCore.Components.NavigationManager> now includes a `NotFound` method to handle scenarios where a requested resource isn't found during static server-side rendering (static SSR) or global interactive rendering:
 
 * **Static server-side rendering (static SSR)**: Calling `NotFound` sets the HTTP status code to 404.
-* **Streaming rendering**: Throws an exception if the response has already started.
-* **Interactive rendering**: Signals the Blazor router ([`Router` component](xref:blazor/fundamentals/routing#route-templates)) to render Not Found content.
 
-Per-page/component rendering support is planned for Preview 5 in June, 2025.
+* **Interactive rendering**: Signals the Blazor router ([`Router` component](xref:blazor/fundamentals/routing?view=aspnetcore-10.0#route-templates)) to render Not Found content.
+
+* **Streaming rendering**: If [enhanced navigation](xref:blazor/fundamentals/routing?view=aspnetcore-10.0#enhanced-navigation-and-form-handling) is active, [streaming rendering](xref:blazor/components/rendering#streaming-rendering) renders Not Found content without reloading the page. When enhanced navigation is blocked, the framework redirects to Not Found content with a page refresh.
+
+Streaming rendering can only render components that have a route, such as a [`NotFoundPage` assignment](#blazor-router-has-a-notfoundpage-parameter) (`NotFoundPage="..."`) or a [Status Code Pages Re-execution Middleware page assignment](xref:fundamentals/error-handling#usestatuscodepageswithreexecute) (<xref:Microsoft.AspNetCore.Builder.StatusCodePagesExtensions.UseStatusCodePagesWithReExecute%2A>). The Not Found render fragment (`<NotFound>...</NotFound>`) and the `DefaultNotFound` 404 content ("`Not found`" plain text) don't have routes, so they can't be used during streaming rendering.
+
+Streaming `NavigationManager.NotFound` content rendering uses (in order):
+
+* A `NotFoundPage` passed to the `Router` component, if present.
+* A Status Code Pages Re-execution Middleware page, if configured.
+* No action if neither of the preceding approaches is adopted.
+
+Non-streaming `NavigationManager.NotFound` content rendering uses (in order):
+
+* A `NotFoundPage` passed to the `Router` component, if present.
+* Not Found render fragment content, if present. *Not recommended in .NET 10 or later.*
+* `DefaultNotFound` 404 content ("`Not found`" plain text).
+
+[Status Code Pages Re-execution Middleware](xref:fundamentals/error-handling#usestatuscodepageswithreexecute) with <xref:Microsoft.AspNetCore.Builder.StatusCodePagesExtensions.UseStatusCodePagesWithReExecute%2A> takes precedence for browser-based address routing problems, such as an incorrect URL typed into the browser's address bar or selecting a link that has no endpoint in the app.
 
 You can use the `NavigationManager.OnNotFound` event for notifications when `NotFound` is invoked.
 
 For more information and examples, see <xref:blazor/fundamentals/routing?view=aspnetcore-10.0#not-found-responses>.
+
+### Metrics and tracing
+
+This release introduces comprehensive metrics and tracing capabilities for Blazor apps, providing detailed observability of the component lifecycle, navigation, event handling, and circuit management.
+
+For more information, see <xref:blazor/performance/index?view=aspnetcore-10.0#metrics-and-tracing>.
+
+### JavaScript bundler support
+
+Blazor's build output isn't compatible with JavaScript bundlers, such as [Gulp](https://gulpjs.com), [Webpack](https://webpack.js.org), and [Rollup](https://rollupjs.org/). Blazor can now produce bundler-friendly output during publish by setting the `WasmBundlerFriendlyBootConfig` MSBuild property to `true`.
+
+For more information, see <xref:blazor/host-and-deploy/index?view=aspnetcore-10.0#javascript-bundler-support>.
+
+### Blazor WebAssembly static asset preloading in Blazor Web Apps
+
+We replaced `<link>` headers with a `LinkPreload` component (`<LinkPreload />`) for preloading WebAssembly assets in Blazor Web Apps. This permits the app base path configuration (`<base href="..." />`) to correctly identify the app's root.
+
+Removing the component disables the feature if the app is using a [`loadBootResource` callback](xref:blazor/fundamentals/startup?view=aspnetcore-10.0#load-client-side-boot-resources) to modify URLs.
+
+The Blazor Web App template adopts the feature by default in .NET 10, and apps upgrading to .NET 10 can implement the feature by placing the `LinkPreload` component after the base URL tag (`<base>`) in the `App` component's head content (`App.razor`):
+
+```diff
+<head>
+    ...
+    <base href="/" />
++   <LinkPreload />
+    ...
+</head>
+```
+
+For more information, see <xref:blazor/host-and-deploy/server/index?view=aspnetcore-10.0#static-asset-preloading>.
+
+### Improved form validation
+
+Blazor now has improved form validation capabilities, including support for validating properties of nested objects and collection items.
+
+To create a validated form, use a <xref:Microsoft.AspNetCore.Components.Forms.DataAnnotationsValidator> component inside an <xref:Microsoft.AspNetCore.Components.Forms.EditForm> component, just as before.
+
+To opt into the new validation feature:
+
+1. Call the `AddValidation` extension method in the `Program` file where services are registered.
+2. Declare the form model types in a C# class file, not in a Razor component (`.razor`).
+3. Annotate the root form model type with the `[ValidatableType]` attribute.
+
+Without following the preceding steps, the validation behavior remains the same as in previous .NET releases.
+
+The following example demonstrates customer orders with the improved form validation (details omitted for brevity):
+
+In `Program.cs`, call `AddValidation` on the service collection to enable the new validation behavior:
+
+```csharp
+builder.Services.AddValidation();
+```
+
+In the following `Order` class, the `[ValidatableType]` attribute is required on the top-level model type. The other types are discovered automatically. `OrderItem` and `ShippingAddress` aren't shown for brevity, but nested and collection validation works the same way in those types if they were shown.
+
+`Order.cs`:
+
+```csharp
+[ValidatableType]
+public class Order
+{
+    public Customer Customer { get; set; } = new();
+    public List<OrderItem> OrderItems { get; set; } = [];
+}
+
+public class Customer
+{
+    [Required(ErrorMessage = "Name is required.")]
+    public string? FullName { get; set; }
+
+    [Required(ErrorMessage = "Email is required.")]
+    public string? Email { get; set; }
+
+    public ShippingAddress ShippingAddress { get; set; } = new();
+}
+```
+
+In the following `OrderPage` component, the <xref:Microsoft.AspNetCore.Components.Forms.DataAnnotationsValidator> component is present in the <xref:Microsoft.AspNetCore.Components.Forms.EditForm> component.
+
+`OrderPage.razor`:
+
+```razor
+<EditForm Model="Model">
+    <DataAnnotationsValidator />
+
+    <h3>Customer Details</h3>
+    <div class="mb-3">
+        <label>
+            Full Name
+            <InputText @bind-Value="Model!.Customer.FullName" />
+        </label>
+        <ValidationMessage For="@(() => Model!.Customer.FullName)" />
+    </div>
+
+    @* ... form continues ... *@
+</EditForm>
+
+@code {
+    public Order? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    // ... code continues ...
+}
+```
+
+The requirement to declare the model types outside of Razor components (`.razor` files) is due to the fact that both the new validation feature and the Razor compiler itself are using a source generator. Currently, output of one source generator can't be used as an input for another source generator.
+
+### Custom Blazor cache and `BlazorCacheBootResources` MSBuild property removed
+
+Now that all Blazor client-side files are fingerprinted and cached by the browser, Blazor's custom caching mechanism and the `BlazorCacheBootResources` MSBuild property have been removed from the framework. If the client-side project's project file contains the MSBuild property, remove the property, as it no longer has any effect:
+
+```diff
+- <BlazorCacheBootResources>...</BlazorCacheBootResources>
+```
+
+For more information, see <xref:blazor/host-and-deploy/webassembly/bundle-caching-and-integrity-check-failures?view=aspnetcore-10.0>.
+
+### Web Authentication API (passkey) support for ASP.NET Core Identity
+
+[Web Authentication (WebAuthn) API](https://developer.mozilla.org/docs/Web/API/Web_Authentication_API) support, known widely as *passkeys*, is a modern, phishing-resistant authentication method that improves security and user experience by leveraging public key cryptography and device-based authentication. ASP.NET Core Identity now supports passkey authentication based on WebAuthn and FIDO2 standards. This feature allows users to sign in without passwords, using secure, device-based authentication methods, such as biometrics or security keys.
+
+The Preview 6 Blazor Web App project template provides out-of-the-box passkey management and login functionality.
+
+Migration guidance for existing apps will be published for the upcoming release of Preview 7, which is scheduled for mid-August.
+
+### Circuit state persistence
+
+During server-side rendering, Blazor Web Apps can now persist a user's session (circuit) state when the connection to the server is lost for an extended period of time or proactively paused, as long as a full-page refresh isn't triggered. This allows users to resume their session without losing unsaved work in the following scenarios:
+
+* Browser tab throttling
+* Mobile device users switching apps
+* Network interruptions
+* Proactive resource management (pausing inactive circuits)
+
+*[Enhanced navigation](xref:blazor/fundamentals/routing#enhanced-navigation-and-form-handling) with circuit state persistence isn't currently supported but planned for a future release.*
+
+For more information, see <xref:blazor/state-management/server?view=aspnetcore-10.0#circuit-state-and-prerendering-state-preservation>.

@@ -205,7 +205,7 @@ Both callbacks can return a `Promise`, and the promise is awaited before the sta
 For the file name:
 
 * If the JS initializers are consumed as a static asset in the project, use the format `{ASSEMBLY NAME}.lib.module.js`, where the `{ASSEMBLY NAME}` placeholder is the app's assembly name. For example, name the file `BlazorSample.lib.module.js` for a project with an assembly name of `BlazorSample`. Place the file in the app's `wwwroot` folder.
-* If the JS initializers are consumed from an RCL, use the format `{LIBRARY NAME/PACKAGE ID}.lib.module.js`, where the `{LIBRARY NAME/PACKAGE ID}` placeholder is the project's library name or package identifier. For example, name the file `RazorClassLibrary1.lib.module.js` for an RCL with a package identifier of `RazorClassLibrary1`. Place the file in the library's `wwwroot` folder.
+* If the JS initializers are consumed from an RCL, use the format `{LIBRARY NAME/PACKAGE ID}.lib.module.js`, where the `{LIBRARY NAME/PACKAGE ID}` placeholder is the project's library name or package identifier (`<PackageId>` value in the library's project file). For example, name the file `RazorClassLibrary1.lib.module.js` for an RCL with a package identifier of `RazorClassLibrary1`. Place the file in the library's `wwwroot` folder.
 
 :::moniker-end
 
@@ -525,6 +525,9 @@ Control headers at startup in C# code using the following approaches.
 
 In the following examples, a [Content Security Policy (CSP)](https://developer.mozilla.org/docs/Web/HTTP/Guides/CSP) is applied to the app via a CSP header. The `{POLICY STRING}` placeholder is the CSP policy string. For more information on CSPs, see <xref:blazor/security/content-security-policy>.
 
+> [!NOTE]
+> Headers can't be set after the response starts. The approaches in this section only set headers before the response starts, so the approaches described here are safe. For more information, see <xref:blazor/components/httpcontext#dont-set-or-modify-headers-after-the-response-starts>.
+
 ### Server-side and prerendered client-side scenarios
 
 Use [ASP.NET Core Middleware](xref:fundamentals/middleware/index) to control the headers collection.
@@ -607,9 +610,6 @@ The loading indicator used in Blazor WebAssembly apps isn't present in an app cr
 * Showing multiple loading indicators on the same rendered page.
 * Inadvertently discarding prerendered content while the .NET WebAssembly runtime is loading.
 
-<!-- UPDATE 10.0 Will be removed for a new feature in this area. 
-                 Tracked by: https://github.com/dotnet/aspnetcore/issues/49056 -->
-
 A future release of .NET might provide a framework-based loading indicator. In the meantime, you can add a custom loading indicator to a Blazor Web App.
 
 #### Per-component Interactive WebAssembly rendering with prerendering
@@ -624,6 +624,37 @@ Create a `ContentLoading` component in the `Layout` folder of the `.Client` app 
 To load CSS styles for the indicator, add the styles to `<head>` content with the <xref:Microsoft.AspNetCore.Components.Web.HeadContent> component. For more information, see <xref:blazor/components/control-head-content>.
 
 `Layout/ContentLoading.razor`:
+
+:::moniker-end
+
+:::moniker range=">= aspnetcore-9.0"
+
+```razor
+@if (!RendererInfo.IsInteractive)
+{
+    <!-- OPTIONAL ...
+    <HeadContent>
+        <style>
+            ...
+        </style>
+    </HeadContent>
+    -->
+    <progress id="loadingIndicator" aria-label="Content loading…"></progress>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
+```
+
+:::moniker-end
+
+:::moniker range=">= aspnetcore-8.0 < aspnetcore-9.0"
 
 ```razor
 @if (!OperatingSystem.IsBrowser())
@@ -646,6 +677,16 @@ else
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 }
+```
+
+:::moniker-end
+
+:::moniker range=">= aspnetcore-8.0"
+
+If you didn't already have a `Layout` folder in the `.Client` project, add the namespace for the `Layout` folder to the `_Imports.razor` file. In the following example, the project's namespace is `BlazorSample.Client`:
+
+```razor
+@using BlazorSample.Client.Layout
 ```
 
 In a component that adopts Interactive WebAssembly rendering, wrap the component's Razor markup with the `ContentLoading` component. The following example demonstrates the approach with the `Counter` component of an app created from the Blazor Web App project template.
@@ -676,10 +717,6 @@ In a component that adopts Interactive WebAssembly rendering, wrap the component
 }
 ```
 
-:::moniker-end
-
-:::moniker range=">= aspnetcore-9.0"
-
 #### Global Interactive WebAssembly rendering with prerendering
 
 *This scenario applies to global Interactive WebAssembly rendering with prerendering (`@rendermode="InteractiveWebAssembly"` on the `HeadOutlet` and `Routes` components in the `App` component).*
@@ -692,6 +729,10 @@ Create a `ContentLoading` component in the `Layout` folder of the `.Client` app 
 To load CSS styles for the indicator, add the styles to `<head>` content with the <xref:Microsoft.AspNetCore.Components.Web.HeadContent> component. For more information, see <xref:blazor/components/control-head-content>.
 
 `Layout/ContentLoading.razor`:
+
+:::moniker-end
+
+:::moniker range=">= aspnetcore-9.0"
 
 ```razor
 @if (!RendererInfo.IsInteractive)
@@ -716,6 +757,43 @@ else
 }
 ```
 
+:::moniker-end
+
+:::moniker range=">= aspnetcore-8.0 < aspnetcore-9.0"
+
+```razor
+@if (!OperatingSystem.IsBrowser())
+{
+    <!-- OPTIONAL ...
+    <HeadContent>
+        <style>
+            ...
+        </style>
+    </HeadContent>
+    -->
+    <progress id="loadingIndicator" aria-label="Content loading…"></progress>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
+```
+
+:::moniker-end
+
+:::moniker range=">= aspnetcore-8.0"
+
+If you didn't already have a `Layout` folder in the `.Client` project, add the namespace for the `Layout` folder to the `_Imports.razor` file. In the following example, the project's namespace is `BlazorSample.Client`:
+
+```razor
+@using BlazorSample.Client.Layout
+```
+
 In the `MainLayout` component (`Layout/MainLayout.razor`) of the `.Client` project, wrap the <xref:Microsoft.AspNetCore.Components.LayoutComponentBase.Body%2A> property (`@Body`) with the `ContentLoading` component:
 
 In `Layout/MainLayout.razor`:
@@ -725,10 +803,6 @@ In `Layout/MainLayout.razor`:
     @Body
 + </ContentLoading>
 ```
-
-:::moniker-end
-
-:::moniker range=">= aspnetcore-8.0"
 
 #### Global Interactive WebAssembly rendering without prerendering
 

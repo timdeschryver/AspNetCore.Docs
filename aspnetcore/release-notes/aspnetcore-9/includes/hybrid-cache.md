@@ -7,7 +7,7 @@ ms.date: 05/21/2024
 ### New `HybridCache` library
 
 > [!IMPORTANT]
-> `HybridCache` is currently still in preview but will be fully released *after* .NET 9.0 in a future minor release of .NET Extensions.
+> `HybridCache` is currently still in preview but will be fully released *after* .NET 9 in a future minor release of .NET Extensions.
 
 The <xref:Microsoft.Extensions.Caching.Hybrid.HybridCache> API bridges some gaps in the existing <xref:Microsoft.Extensions.Caching.Distributed.IDistributedCache> and <xref:Microsoft.Extensions.Caching.Memory.IMemoryCache> APIs. It also adds new capabilities, such as:
 
@@ -126,7 +126,7 @@ By reusing instances, `HybridCache` can reduce the overhead of CPU and object al
 Like `IDistributedCache`, `HybridCache` supports removal by key with a `RemoveKeyAsync` method.
 
 `HybridCache` also provides optional APIs for `IDistributedCache` implementations, to avoid `byte[]` allocations. This feature is implemented
-by the preview versions of the `Microsoft.Extensions.Caching.StackExchangeRedis` and `Microsoft.Extensions.Caching.SqlServer` packages.
+by the preview versions of the `Microsoft.Extensions.Caching.StackExchangeRedis`,  `Microsoft.Extensions.Caching.SqlServer`, and `Microsoft.Extensions.Caching.Postgres` packages.
 
 Serialization is configured as part of registering the service, with support for type-specific and generalized serializers via the
 `WithSerializer` and `.WithSerializerFactory` methods, chained from the `AddHybridCache` call. By default, the library

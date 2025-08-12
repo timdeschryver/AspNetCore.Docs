@@ -4,7 +4,7 @@ author: tdykstra
 description: Discover approaches to preserve session between requests.
 ms.author: tdykstra
 ms.custom: mvc
-ms.date: 05/29/2024
+ms.date: 04/24/2025
 uid: fundamentals/app-state
 ---
 # Session and state management in ASP.NET Core
@@ -15,7 +15,7 @@ By [Rick Anderson](https://twitter.com/RickAndMSFT), [Kirk Larkin](https://twitt
 
 HTTP is a stateless protocol. By default, HTTP requests are independent messages that don't retain user values. This article describes several approaches to preserve user data between requests.
 
-For Blazor state management guidance, which adds to or supersedes the guidance in this article, see <xref:blazor/state-management>.
+For Blazor state management guidance, which adds to or supersedes the guidance in this article, see <xref:blazor/state-management/index>.
 
 ## State management
 
@@ -33,7 +33,17 @@ State can be stored using several approaches. Each approach is described later i
 
 ## SignalR/Blazor Server and HTTP context-based state management
 
-[SignalR](xref:signalr/introduction) apps shouldn't use session state and other state management approaches that rely upon a stable HTTP context to store information. SignalR apps can store per-connection state in [`Context.Items` in the hub](xref:signalr/hubs). For more information and alternative state management approaches for Blazor Server apps, see <xref:blazor/state-management?pivots=server>. <!-- https://github.com/aspnet/SignalR/issues/2139 https://github.com/dotnet/AspNetCore.Docs/issues/27956 https://github.com/dotnet/AspNetCore.Docs/issues/14974 -->
+[SignalR](xref:signalr/introduction) apps shouldn't use session state and other state management approaches that rely upon a stable HTTP context to store information. SignalR apps can store per-connection state in [`Context.Items` in the hub](xref:signalr/hubs). For more information and alternative state management approaches for Blazor Server apps, see <xref:blazor/state-management/index> and <xref:blazor/state-management/server>.
+
+<!-- UPDATE 10.0 - These links were left here for some reason. 
+                   I'll investigate and see why they're here
+                   before 10.0 GA.
+
+https://github.com/aspnet/SignalR/issues/2139
+https://github.com/dotnet/AspNetCore.Docs/issues/27956
+https://github.com/dotnet/AspNetCore.Docs/issues/14974
+
+-->
 
 ## Cookies
 
@@ -75,7 +85,7 @@ Session state exhibits the following behaviors:
 
 The in-memory cache provider stores session data in the memory of the server where the app resides. In a server farm scenario:
 
-* Use *sticky sessions* to tie each session to a specific app instance on an individual server. [Azure App Service](https://azure.microsoft.com/services/app-service/) uses [Application Request Routing (ARR)](/iis/extensions/planning-for-arr/using-the-application-request-routing-module) to enforce sticky sessions by default. However, sticky sessions can affect scalability and complicate web app updates. A better approach is to use a Redis or SQL Server distributed cache, which doesn't require sticky sessions. For more information, see <xref:performance/caching/distributed>.
+* Use *sticky sessions* to tie each session to a specific app instance on an individual server. [Azure App Service](https://azure.microsoft.com/services/app-service/) uses [Application Request Routing (ARR)](/iis/extensions/planning-for-arr/using-the-application-request-routing-module) to enforce sticky sessions by default. However, sticky sessions can affect scalability and complicate web app updates. A better approach is to use a Redis, SQL Server, or Azure Postgres distributed cache, which doesn't require sticky sessions. For more information, see <xref:performance/caching/distributed>.
 * The session cookie is encrypted via <xref:Microsoft.AspNetCore.DataProtection.IDataProtector>. Data Protection must be properly configured to read session cookies on each machine. For more information, see <xref:security/data-protection/introduction> and [Key storage providers](xref:security/data-protection/implementation/key-storage-providers).
 
 ### Configure session state
@@ -313,7 +323,15 @@ State can be stored using several approaches. Each approach is described later i
 
 ## SignalR/Blazor Server and HTTP context-based state management
 
-[SignalR](xref:signalr/introduction) apps shouldn't use session state and other state management approaches that rely upon a stable HTTP context to store information. SignalR apps can store per-connection state in [`Context.Items` in the hub](xref:signalr/hubs). For more information and alternative state management approaches for Blazor Server apps, see <xref:blazor/state-management?pivots=server>. <!-- https://github.com/aspnet/SignalR/issues/2139 https://github.com/dotnet/AspNetCore.Docs/issues/27956 https://github.com/dotnet/AspNetCore.Docs/issues/14974 -->
+[SignalR](xref:signalr/introduction) apps shouldn't use session state and other state management approaches that rely upon a stable HTTP context to store information. SignalR apps can store per-connection state in [`Context.Items` in the hub](xref:signalr/hubs). For more information and alternative state management approaches for Blazor Server apps, see <xref:blazor/state-management/index> and <xref:blazor/state-management/server>.
+
+<!-- UPDATE 10.0 - These links were left here. See why they're here.
+
+https://github.com/aspnet/SignalR/issues/2139
+https://github.com/dotnet/AspNetCore.Docs/issues/27956
+https://github.com/dotnet/AspNetCore.Docs/issues/14974
+
+-->
 
 ## Cookies
 
@@ -354,7 +372,7 @@ Session state exhibits the following behaviors:
 
 The in-memory cache provider stores session data in the memory of the server where the app resides. In a server farm scenario:
 
-* Use *sticky sessions* to tie each session to a specific app instance on an individual server. [Azure App Service](https://azure.microsoft.com/services/app-service/) uses [Application Request Routing (ARR)](/iis/extensions/planning-for-arr/using-the-application-request-routing-module) to enforce sticky sessions by default. However, sticky sessions can affect scalability and complicate web app updates. A better approach is to use a Redis or SQL Server distributed cache, which doesn't require sticky sessions. For more information, see <xref:performance/caching/distributed>.
+* Use *sticky sessions* to tie each session to a specific app instance on an individual server. [Azure App Service](https://azure.microsoft.com/services/app-service/) uses [Application Request Routing (ARR)](/iis/extensions/planning-for-arr/using-the-application-request-routing-module) to enforce sticky sessions by default. However, sticky sessions can affect scalability and complicate web app updates. A better approach is to use a Redis, SQL Server, or Azure Postgres distributed cache, which doesn't require sticky sessions. For more information, see <xref:performance/caching/distributed>.
 * The session cookie is encrypted via <xref:Microsoft.AspNetCore.DataProtection.IDataProtector>. Data Protection must be properly configured to read session cookies on each machine. For more information, see <xref:security/data-protection/introduction> and [Key storage providers](xref:security/data-protection/implementation/key-storage-providers).
 
 ### Configure session state
