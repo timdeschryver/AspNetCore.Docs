@@ -1,27 +1,29 @@
 ---
-title: Test gRPC services with gRPCurl in ASP.NET Core
+title: Test gRPC services with gRPCurl and gRPCui in ASP.NET Core
 author: jamesnk
 description: Learn how to test services with gRPC tools. gRPCurl a command-line tool for interacting with gRPC services. gRPCui is an interactive web UI.
 monikerRange: '>= aspnetcore-3.0'
-ms.author: jamesnk
-ms.date: 03/31/2022
+ms.author: wpickett
+ms.date: 04/03/2024
 uid: grpc/test-tools
 ---
-# Test gRPC services with gRPCurl in ASP.NET Core
+# Test gRPC services with gRPCurl and gRPCui in ASP.NET Core
+
+[!INCLUDE[](~/includes/not-latest-version.md)]
 
 By [James Newton-King](https://twitter.com/jamesnk)
 :::moniker range=">= aspnetcore-6.0"
 Tooling is available for gRPC that allows developers to test services without building client apps:
 
-* [gRPCurl](https://github.com/fullstorydev/grpcurl) is a command-line tool that provides interaction with gRPC services.
-* [gRPCui](https://github.com/fullstorydev/grpcui) builds on top of gRPCurl and adds an interactive web UI for gRPC, similar to tools such as Postman and Swagger UI.
+* [gRPCurl](https://github.com/fullstorydev/grpcurl) is an open-source command-line tool that provides interaction with gRPC services.
+* [gRPCui](https://github.com/fullstorydev/grpcui) builds on top of gRPCurl and adds an open-source interactive web UI for gRPC.
 
 This article discusses how to:
 
-* Set up gRPC reflection with a gRPC ASP.NET Core app.
-* Download and install gRPCurl and gRPCui.
-* Discover and test gRPC services with `grpcurl`.
-* Interact with gRPC services via a browser using `grpcui`.
+* Set up gRPC server reflection with a gRPC ASP.NET Core app.
+* Interact with gRPC using test tools:
+  * Discover and test gRPC services with `grpcurl`.
+  * Interact with gRPC services via a browser using `grpcui`.
 
 > [!NOTE]
 > To learn how to unit test gRPC services, see <xref:grpc/test-services>.
@@ -30,8 +32,8 @@ This article discusses how to:
 
 Tooling must know the Protobuf contract of services before it can call them. There are two ways to do this:
 
-* Set up [gRPC reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) on the server. Tools, such as gRPCurl and Postman, automatically discover service contracts.
-* Specify `.proto` files in command-line arguments to gRPCurl.
+* Set up [gRPC reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) on the server. Tools, such as gRPCurl, use reflection to automatically discover service contracts.
+* Add `.proto` files to the tool manually.
 
 It's easier to use gRPC reflection. gRPC reflection adds a new gRPC service to the app that clients can call to discover services.
 
@@ -49,6 +51,30 @@ When gRPC reflection is set up:
 * A gRPC reflection service is added to the server app.
 * Client apps that support gRPC reflection can call the reflection service to discover services hosted by the server.
 * gRPC services are still called from the client. Reflection only enables service discovery and doesn't bypass server-side security. Endpoints protected by [authentication and authorization](xref:grpc/authn-and-authz) require the caller to pass credentials for the endpoint to be called successfully.
+
+### Reflection service security
+
+gRPC reflection returns a list of available APIs, which could contain sensitive information. Care should be taken to limit access to the gRPC reflection service.
+
+gRPC reflection is usually only required in a local development environment. For local development, the reflection service should only be mapped when [IsDevelopment](/en-us/dotnet/api/microsoft.aspnetcore.hosting.hostingenvironmentextensions.isdevelopment) returns true:
+
+```csharp
+if (env.IsDevelopment())
+{
+    app.MapGrpcReflectionService();
+}
+```
+
+Access to the service can be controlled through standard ASP.NET Core authorization extension methods, such as [`AllowAnonymous`](/dotnet/api/microsoft.aspnetcore.builder.authorizationendpointconventionbuilderextensions.allowanonymous) and [`RequireAuthorization`](/dotnet/api/microsoft.aspnetcore.builder.authorizationendpointconventionbuilderextensions.requireauthorization).
+
+For example, if an app has been configured to require authorization by default, configuration the gRPC reflection endpoint with `AllowAnonymous` to skip authentication and authorization.
+
+```csharp
+if (env.IsDevelopment())
+{
+    app.MapGrpcReflectionService().AllowAnonymous();
+}
+```
 
 ## gRPCurl
 
@@ -134,7 +160,7 @@ $ grpcurl -d '{ "name": "World" }' localhost:<port> greet.Greeter/SayHello
 
 ## gRPCui
 
-gRPCui is an interactive web UI for gRPC. gRPCui builds on top of gRPCurl. gRPCui offers a GUI for discovering and testing gRPC services, similar to HTTP tools such as Postman or Swagger UI.
+gRPCui is an interactive web UI for gRPC. gRPCui builds on top of gRPCurl. gRPCui offers a GUI for discovering and testing gRPC services, similar to HTTP tools such as Swagger UI.
 
 For information about downloading and installing `grpcui`, see the [gRPCui GitHub homepage](https://github.com/fullstorydev/grpcui#installation).
 
@@ -166,15 +192,15 @@ The tool launches a browser window with the interactive web UI. gRPC services ar
 :::moniker range=">= aspnetcore-3.0 < aspnetcore-6.0"
 Tooling is available for gRPC that allows developers to test services without building client apps:
 
-* [gRPCurl](https://github.com/fullstorydev/grpcurl) is a command-line tool that provides interaction with gRPC services.
-* [gRPCui](https://github.com/fullstorydev/grpcui) builds on top of gRPCurl and adds an interactive web UI for gRPC, similar to tools such as Postman and Swagger UI.
+* [gRPCurl](https://github.com/fullstorydev/grpcurl) is an open-source command-line tool that provides interaction with gRPC services.
+* [gRPCui](https://github.com/fullstorydev/grpcui) builds on top of gRPCurl and adds an open-source interactive web UI for gRPC.
 
 This article discusses how to:
 
-* Set up gRPC reflection with a gRPC ASP.NET Core app.
-* Download and install gRPCurl and gRPCui.
-* Discover and test gRPC services with `grpcurl`.
-* Interact with gRPC services via a browser using `grpcui`.
+* Set up gRPC server reflection with a gRPC ASP.NET Core app.
+* Interact with gRPC using test tools:
+  * Discover and test gRPC services with `grpcurl`.
+  * Interact with gRPC services via a browser using `grpcui`.
 
 > [!NOTE]
 > To learn how to unit test gRPC services, see <xref:grpc/test-services>.
@@ -183,8 +209,8 @@ This article discusses how to:
 
 Tooling must know the Protobuf contract of services before it can call them. There are two ways to do this:
 
-* Set up [gRPC reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) on the server. Tools, such as gRPCurl and Postman, automatically discover service contracts.
-* Specify `.proto` files in command-line arguments to gRPCurl.
+* Set up [gRPC reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) on the server. Tools, such as gRPCurl, use reflection to automatically discover service contracts.
+* Add `.proto` files to the tool manually.
 
 It's easier to use gRPC reflection. gRPC reflection adds a new gRPC service to the app that clients can call to discover services.
 
@@ -286,7 +312,7 @@ $ grpcurl -d '{ "name": "World" }' localhost:5001 greet.Greeter/SayHello
 
 ## gRPCui
 
-gRPCui is an interactive web UI for gRPC. gRPCui builds on top of gRPCurl. gRPCui offers a GUI for discovering and testing gRPC services, similar to HTTP tools such as Postman or Swagger UI.
+gRPCui is an interactive web UI for gRPC. gRPCui builds on top of gRPCurl. gRPCui offers a GUI for discovering and testing gRPC services, similar to HTTP tools such as Swagger UI.
 
 For information about downloading and installing `grpcui`, see the [gRPCui GitHub homepage](https://github.com/fullstorydev/grpcui#installation).
 
