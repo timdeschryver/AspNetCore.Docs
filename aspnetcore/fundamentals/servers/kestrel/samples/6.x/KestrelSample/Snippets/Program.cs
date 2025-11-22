@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using Microsoft.AspNetCore.Server.Kestrel.Transport.Quic;
 
 namespace KestrelSample.Snippets;
 
@@ -286,10 +287,6 @@ public static class Program
         builder.WebHost.ConfigureKestrel((context, serverOptions) =>
         {
             serverOptions.ListenUnixSocket("/tmp/kestrel-test.sock");
-            serverOptions.ListenUnixSocket("/tmp/kestrel-test.sock", listenOptions =>
-            {
-                listenOptions.UseHttps("testCert.pfx", "testpassword");
-            });
         });
         // </snippet_ListenUnixSocket>
     }
@@ -323,6 +320,7 @@ public static class Program
             serverOptions.Listen(IPAddress.Any, 8000, listenOptions =>
             {
                 listenOptions.UseHttps("testCert.pfx", "testPassword");
+                listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
             });
         });
         // </snippet_ConfigureKestrelProtocols>
@@ -597,5 +595,28 @@ public static class Program
             });
         });
         // </snippet_Http3>
+    }
+
+    public static void UseQuicWithOptions(string[] args)
+    {
+        // <snippet_UseQuicWithOptions>
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.WebHost.UseQuic(options =>
+        {
+#pragma warning disable CA2252 // Using preview features
+            options.MaxBidirectionalStreamCount = 200;
+#pragma warning restore CA2252
+        });
+
+        builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+        {
+            serverOptions.ListenAnyIP(5001, listenOptions =>
+            {
+                listenOptions.Protocols = HttpProtocols.Http1AndHttp2AndHttp3;
+                listenOptions.UseHttps();
+            });
+        });
+        // </snippet_UseQuicWithOptions>
     }
 }
