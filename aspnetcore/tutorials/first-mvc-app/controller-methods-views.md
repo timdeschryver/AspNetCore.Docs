@@ -4,7 +4,7 @@ author: wadepickett
 description: Part 6, add a model to an ASP.NET Core MVC app
 monikerRange: '>= aspnetcore-3.1'
 ms.author: wpickett
-ms.date: 03/02/2025
+ms.date: 24/11/2025
 uid: tutorials/first-mvc-app/controller-methods-views
 ---
 
