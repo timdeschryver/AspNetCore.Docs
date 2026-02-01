@@ -1,14 +1,16 @@
 ---
 title: Part 2, Razor Pages with EF Core in ASP.NET Core - CRUD 
-author: rick-anderson
+author: tdykstra
 description: Part 2 of Razor Pages and Entity Framework tutorial series.
-ms.author: riande
+ms.author: tdykstra
 monikerRange: '>= aspnetcore-3.1'
 ms.custom: "mvc"
 ms.date: 11/11/2021
 uid: data/ef-rp/crud
 ---
 # Part 2, Razor Pages with EF Core in ASP.NET Core - CRUD
+
+[!INCLUDE[](~/includes/not-latest-version.md)]
 
 By [Tom Dykstra](https://github.com/tdykstra), [Jeremy Likness](https://twitter.com/jeremylikness), and [Jon P Smith](https://twitter.com/thereformedprog)
 
@@ -337,7 +339,7 @@ Replace the code in `Pages/Students/Delete.cshtml.cs` with the following code:
 The preceding code:
 
 * Adds [Logging](xref:fundamentals/logging/index).
-* Adds adds the optional parameter `saveChangesError` to the `OnGetAsync` method signature. `saveChangesError` indicates whether the method was called after a failure to delete the student object.
+* Adds the optional parameter `saveChangesError` to the `OnGetAsync` method signature. `saveChangesError` indicates whether the method was called after a failure to delete the student object.
 
 The delete operation might fail because of transient network problems. Transient network errors are more likely when the database is in the cloud. The `saveChangesError` parameter is `false` when the Delete page `OnGetAsync` is called from the UI. When `OnGetAsync` is called by `OnPostAsync` because the delete operation failed, the `saveChangesError` parameter is `true`.
 

@@ -1,7 +1,7 @@
 ---
 title: Link Tag Helper in ASP.NET Core
-author: rick-anderson
-ms.author: riande
+author: tdykstra
+ms.author: tdykstra
 description: Discover the ASP.NET Core Link Tag Helper attributes and the role each attribute plays in extending behavior of the HTML Link tag.
 ms.custom: mvc
 ms.date: 09/24/2019
@@ -21,7 +21,7 @@ The following Razor markup shows the `head` element of a layout file created wit
 
 [!code-cshtml[](link-tag-helper/sample/_Layout.cshtml?name=snippet)]
 
-The following is rendered HTML from the preceding code (in a non-Development environment):
+The following is rendered HTML from the preceding code (in a non-`Development` environment):
 
 [!code-html[](link-tag-helper/sample/HtmlPage1.html)]
 

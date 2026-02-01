@@ -1,19 +1,21 @@
 ---
 title: Detect changes with change tokens in ASP.NET Core
-author: rick-anderson
+author: tdykstra
 description: Learn how to use change tokens to track changes.
 monikerRange: '>= aspnetcore-2.1'
-ms.author: riande
+ms.author: tdykstra
 ms.date: 10/07/2019
 uid: fundamentals/change-tokens
 ---
 # Detect changes with change tokens in ASP.NET Core
 
+[!INCLUDE[](~/includes/not-latest-version.md)]
+
 :::moniker range=">= aspnetcore-3.0"
 
 A *change token* is a general-purpose, low-level building block used to track state changes.
 
-[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/change-tokens/samples/) ([how to download](xref:index#how-to-download-a-sample))
+[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/change-tokens/samples/) ([how to download](xref:fundamentals/index#how-to-download-a-sample))
 
 ## IChangeToken interface
 
@@ -65,7 +67,7 @@ By default, the `IFileMonitor` is provided by a <xref:Microsoft.Extensions.FileP
 
 The sample app demonstrates two implementations for monitoring configuration changes. If any of the `appsettings` files change, both of the file monitoring implementations execute custom code&mdash;the sample app writes a message to the console.
 
-A configuration file's `FileSystemWatcher` can trigger multiple token callbacks for a single configuration file change. To ensure that the custom code is only run once when multiple token callbacks are triggered, the sample's implementation checks file hashes. The sample uses SHA1 file hashing. A retry is implemented with an exponential back-off. The retry is present because file locking may occur that temporarily prevents computing a new hash on a file.
+A configuration file's `FileSystemWatcher` can trigger multiple token callbacks for a single configuration file change. To ensure that the custom code is only run once when multiple token callbacks are triggered, the sample's implementation checks file hashes. The sample uses SHA1 file hashing. A retry is implemented with an exponential back-off.
 
 `Utilities/Utilities.cs`:
 
@@ -83,7 +85,7 @@ In `Startup.Configure`:
 
 [!code-csharp[](change-tokens/samples/3.x/SampleApp/Startup.cs?name=snippet3)]
 
-The `state` of the callback is used to pass in the `IWebHostEnvironment`, which is useful for specifying the correct `appsettings` configuration file to monitor (for example, `appsettings.Development.json` when in the Development environment). File hashes are used to prevent the `WriteConsole` statement from running multiple times due to multiple token callbacks when the configuration file has only changed once.
+The `state` of the callback is used to pass in the `IWebHostEnvironment`, which is useful for specifying the correct `appsettings` configuration file to monitor (for example, `appsettings.Development.json` when in the `Development` environment). File hashes are used to prevent the `WriteConsole` statement from running multiple times due to multiple token callbacks when the configuration file has only changed once.
 
 This system runs as long as the app is running and can't be disabled by the user.
 
@@ -150,7 +152,7 @@ Using change tokens in a file caching scenario prevents the presence of stale fi
 The sample uses `GetFileContent` to:
 
 * Return file content.
-* Implement a retry algorithm with exponential back-off to cover cases where a file lock temporarily prevents reading a file.
+* Implement a retry algorithm with exponential back-off to cover cases where a file access problem temporarily delays reading the file's content.
 
 `Utilities/Utilities.cs`:
 
@@ -211,7 +213,7 @@ var compositeChangeToken =
 
 A *change token* is a general-purpose, low-level building block used to track state changes.
 
-[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/change-tokens/samples/) ([how to download](xref:index#how-to-download-a-sample))
+[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/fundamentals/change-tokens/samples/) ([how to download](xref:fundamentals/index#how-to-download-a-sample))
 
 ## IChangeToken interface
 
@@ -263,7 +265,7 @@ By default, the `IFileMonitor` is provided by a <xref:Microsoft.Extensions.FileP
 
 The sample app demonstrates two implementations for monitoring configuration changes. If any of the `appsettings` files change, both of the file monitoring implementations execute custom code&mdash;the sample app writes a message to the console.
 
-A configuration file's `FileSystemWatcher` can trigger multiple token callbacks for a single configuration file change. To ensure that the custom code is only run once when multiple token callbacks are triggered, the sample's implementation checks file hashes. The sample uses SHA1 file hashing. A retry is implemented with an exponential back-off. The retry is present because file locking may occur that temporarily prevents computing a new hash on a file.
+A configuration file's `FileSystemWatcher` can trigger multiple token callbacks for a single configuration file change. To ensure that the custom code is only run once when multiple token callbacks are triggered, the sample's implementation checks file hashes. The sample uses SHA1 file hashing. A retry is implemented with an exponential back-off.
 
 `Utilities/Utilities.cs`:
 
@@ -281,7 +283,7 @@ In `Startup.Configure`:
 
 [!code-csharp[](change-tokens/samples/2.x/SampleApp/Startup.cs?name=snippet3)]
 
-The `state` of the callback is used to pass in the `IHostingEnvironment`, which is useful for specifying the correct `appsettings` configuration file to monitor (for example, `appsettings.Development.json` when in the Development environment). File hashes are used to prevent the `WriteConsole` statement from running multiple times due to multiple token callbacks when the configuration file has only changed once.
+The `state` of the callback is used to pass in the `IHostingEnvironment`, which is useful for specifying the correct `appsettings` configuration file to monitor (for example, `appsettings.Development.json` when in the `Development` environment). File hashes are used to prevent the `WriteConsole` statement from running multiple times due to multiple token callbacks when the configuration file has only changed once.
 
 This system runs as long as the app is running and can't be disabled by the user.
 
@@ -348,7 +350,7 @@ Using change tokens in a file caching scenario prevents the presence of stale fi
 The sample uses `GetFileContent` to:
 
 * Return file content.
-* Implement a retry algorithm with exponential back-off to cover cases where a file lock temporarily prevents reading a file.
+* Implement a retry algorithm with exponential back-off to cover cases where a file access problem temporarily delays reading the file's content.
 
 `Utilities/Utilities.cs`:
 

@@ -3,7 +3,7 @@ title: Test controller logic in ASP.NET Core
 author: ardalis
 description: Learn how to test controller logic in ASP.NET Core with Moq and xUnit.
 monikerRange: '>= aspnetcore-2.1'
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 7/22/2020
 uid: mvc/controllers/testing
@@ -24,7 +24,7 @@ If you're writing custom filters and routes, unit test them in isolation, not as
 
 To demonstrate controller unit tests, review the following controller in the sample app. 
 
-[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/mvc/controllers/testing/samples/) ([how to download](xref:index#how-to-download-a-sample))
+[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/mvc/controllers/testing/samples/) ([how to download](xref:fundamentals/index#how-to-download-a-sample))
 
 The Home controller displays a list of brainstorming sessions and allows the creation of new brainstorming sessions with a POST request:
 
@@ -121,7 +121,7 @@ The third `Create` test, `Create_ReturnsNewlyCreatedIdeaForSession`, verifies th
 
 ## Test ActionResult\<T>
 
-In ASP.NET Core 2.1 or later, [ActionResult\<T>](xref:web-api/action-return-types#actionresultt-type) (<xref:Microsoft.AspNetCore.Mvc.ActionResult%601>) enables you to return a type deriving from `ActionResult` or return a specific type.
+[ActionResult\<T>](xref:web-api/action-return-types#actionresultt-type) (<xref:Microsoft.AspNetCore.Mvc.ActionResult%601>) can return a type deriving from `ActionResult` or return a specific type.
 
 The sample app includes a method that returns a `List<IdeaDTO>` for a given session `id`. If the session `id` doesn't exist, the controller returns <xref:Microsoft.AspNetCore.Mvc.ControllerBase.NotFound*>:
 
@@ -179,7 +179,7 @@ For a valid session `id`, the final test confirms that:
 
 [Controllers](xref:mvc/controllers/actions) play a central role in any ASP.NET Core MVC app. As such, you should have confidence that controllers behave as intended. Automated tests can detect errors before the app is deployed to a production environment.
 
-[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/mvc/controllers/testing/samples/) ([how to download](xref:index#how-to-download-a-sample))
+[View or download sample code](https://github.com/dotnet/AspNetCore.Docs/tree/main/aspnetcore/mvc/controllers/testing/samples/) ([how to download](xref:fundamentals/index#how-to-download-a-sample))
 
 ## Unit tests of controller logic
 

@@ -1,10 +1,10 @@
 ---
 title: ASP.NET Core Razor SDK
-author: Rick-Anderson
+author: tdykstra
 description: Learn how Razor Pages in ASP.NET Core makes coding page-focused scenarios easier and more productive than using MVC.
 monikerRange: '>= aspnetcore-2.1'
-ms.author: riande
-ms.custom: "mvc, seodec18"
+ms.author: tdykstra
+ms.custom: mvc
 ms.date: 03/26/2020
 uid: razor-pages/sdk
 ---
@@ -39,6 +39,10 @@ The following properties control the Razor's SDK behavior as part of a project b
 
 * `RazorCompileOnBuild`: When `true`, compiles and emits the Razor assembly as part of building the project. Defaults to `true`.
 * `RazorCompileOnPublish`: When `true`, compiles and emits the Razor assembly as part of publishing the project. Defaults to `true`.
+* `UseRazorSourceGenerator`: Defaults to `true`. When `true`:
+  * Compiles using source generation.
+  * Doesn't create `<app_name>.Views.dll`. Views are included in `<app_name>.dll`.
+  * Supports [.NET Hot Reload](xref:test/hot-reload).
 
 The properties and items in the following table are used to configure inputs and output to the Razor SDK.
 
@@ -55,15 +59,15 @@ The properties and items in the following table are used to configure inputs and
 | -------- | ----------- |
 | `RazorOutputPath` | The Razor output directory. |
 | `RazorCompileToolset` | Used to determine the toolset used to build the Razor assembly. Valid values are `Implicit`, `RazorSDK`, and `PrecompilationTool`. |
-| [EnableDefaultContentItems](https://github.com/aspnet/websdk/blob/rel-2.0.0/src/ProjectSystem/Microsoft.NET.Sdk.Web.ProjectSystem.Targets/netstandard1.0/Microsoft.NET.Sdk.Web.ProjectSystem.targets#L21) | Default is `true`. When `true`, includes *web.config*, `.json`, and `.cshtml` files as content in the project. When referenced via `Microsoft.NET.Sdk.Web`, files under *wwwroot* and config files are also included. |
+| [EnableDefaultContentItems](https://github.com/dotnet/sdk/blob/main/src/WebSdk/ProjectSystem/Targets/Microsoft.NET.Sdk.Web.ProjectSystem.targets) | Default is `true`. When `true`, includes *web.config*, `.json`, and `.cshtml` files as content in the project. When referenced via `Microsoft.NET.Sdk.Web`, files under *wwwroot* and config files are also included. |
 | `EnableDefaultRazorGenerateItems` | When `true`, includes `.cshtml` files from `Content` items in `RazorGenerate` items. |
-| `GenerateRazorTargetAssemblyInfo` | Not used in .NET 6 and later. |
-| `EnableDefaultRazorTargetAssemblyInfoAttributes` | Not used in .NET 6 and later. |
+| `GenerateRazorTargetAssemblyInfo` | Not used in .NET 6 or later. |
+| `EnableDefaultRazorTargetAssemblyInfoAttributes` | Not used in .NET 6 or later. |
 | `CopyRazorGenerateFilesToPublishDirectory` | When `true`, copies `RazorGenerate` items (`.cshtml`) files to the publish directory. Typically, Razor files aren't required for a published app if they participate in compilation at build-time or publish-time. Defaults to `false`. |
 | `PreserveCompilationReferences` | When `true`, copy reference assembly items to the publish directory. Typically, reference assemblies aren't required for a published app if Razor compilation occurs at build-time or publish-time. Set to `true` if your published app requires runtime compilation. For example, set the value to `true` if the app modifies `.cshtml` files at runtime or uses embedded views. Defaults to `false`. |
 | `IncludeRazorContentInPack` | When `true`, all Razor content items (`.cshtml` files) are marked for inclusion in the generated NuGet package. Defaults to `false`. |
 | `EmbedRazorGenerateSources` | When `true`, adds RazorGenerate (`.cshtml`) items as embedded files to the generated Razor assembly. Defaults to `false`. |
-| `GenerateMvcApplicationPartsAssemblyAttributes` | Not used in .NET 6 and later. |
+| `GenerateMvcApplicationPartsAssemblyAttributes` | Not used in .NET 6 or later. |
 | `DefaultWebContentItemExcludes` | A globbing pattern for item elements that are to be excluded from the `Content` item group in projects targeting the Web or Razor SDK |
 | `ExcludeConfigFilesFromBuildOutput` | When `true`, *.config* and `.json` files do not get copied to the build output directory. |
 | `AddRazorSupportForMvc` | When `true`, configures the Razor SDK to add support for the MVC configuration that is required when building applications containing MVC views or Razor Pages. This property is implicitly set for .NET Core 3.0 or later projects targeting the Web SDK |
@@ -92,7 +96,7 @@ Razor's language version is tightly integrated with the version of the runtime t
 
 ## Additional resources
 
-* [Additions to the csproj format for .NET Core](/dotnet/core/tools/csproj)
+* [MSBuild reference for .NET SDK projects](/dotnet/core/tools/csproj)
 * [Common MSBuild project items](/visualstudio/msbuild/common-msbuild-project-items)
 
 :::moniker-end
@@ -133,7 +137,7 @@ The properties and items in the following table are used to configure inputs and
 | `RazorGenerate` | Item elements (`.cshtml` files) that are inputs to code generation. |
 | `RazorComponent` | Item elements (`.razor` files) that are inputs to Razor component code generation. |
 | `RazorCompile` | Item elements (`.cs` files) that are inputs to Razor compilation targets. Use this `ItemGroup` to specify additional files to be compiled into the Razor assembly. |
-| `RazorTargetAssemblyAttribute` | Item elements used to code generate attributes for the Razor assembly. For example:  <br>`RazorAssemblyAttribute`<br>`Include="System.Reflection.AssemblyMetadataAttribute"`<br>`_Parameter1="BuildSource" _Parameter2="https://docs.microsoft.com/">` |
+| `RazorTargetAssemblyAttribute` | Item elements used to code generate attributes for the Razor assembly. For example:  <br>`RazorAssemblyAttribute`<br>`Include="System.Reflection.AssemblyMetadataAttribute"`<br>`_Parameter1="BuildSource" _Parameter2="https://learn.microsoft.com/">` |
 | `RazorEmbeddedResource` | Item elements added as embedded resources to the generated Razor assembly. |
 
 | Property | Description |
@@ -141,7 +145,7 @@ The properties and items in the following table are used to configure inputs and
 | `RazorTargetName` | File name (without extension) of the assembly produced by Razor. |
 | `RazorOutputPath` | The Razor output directory. |
 | `RazorCompileToolset` | Used to determine the toolset used to build the Razor assembly. Valid values are `Implicit`, `RazorSDK`, and `PrecompilationTool`. |
-| [EnableDefaultContentItems](https://github.com/aspnet/websdk/blob/rel-2.0.0/src/ProjectSystem/Microsoft.NET.Sdk.Web.ProjectSystem.Targets/netstandard1.0/Microsoft.NET.Sdk.Web.ProjectSystem.targets#L21) | Default is `true`. When `true`, includes *web.config*, `.json`, and `.cshtml` files as content in the project. When referenced via `Microsoft.NET.Sdk.Web`, files under *wwwroot* and config files are also included. |
+| [EnableDefaultContentItems](https://github.com/dotnet/websdk/blob/release/2.1/src/ProjectSystem/Microsoft.NET.Sdk.Web.ProjectSystem.Targets/netstandard1.0/Microsoft.NET.Sdk.Web.ProjectSystem.targets#L21) | Default is `true`. When `true`, includes *web.config*, `.json`, and `.cshtml` files as content in the project. When referenced via `Microsoft.NET.Sdk.Web`, files under *wwwroot* and config files are also included. |
 | `EnableDefaultRazorGenerateItems` | When `true`, includes `.cshtml` files from `Content` items in `RazorGenerate` items. |
 | `GenerateRazorTargetAssemblyInfo` | When `true`, generates a `.cs` file containing attributes specified by `RazorAssemblyAttribute` and includes the file in the compile output. |
 | `EnableDefaultRazorTargetAssemblyInfoAttributes` | When `true`, adds a default set of assembly attributes to `RazorAssemblyAttribute`. |
@@ -186,7 +190,7 @@ Razor's language version is tightly integrated with the version of the runtime t
 
 ## Additional resources
 
-* [Additions to the csproj format for .NET Core](/dotnet/core/tools/csproj)
+* [MSBuild reference for .NET SDK projects](/dotnet/core/tools/csproj)
 * [Common MSBuild project items](/visualstudio/msbuild/common-msbuild-project-items)
 
 :::moniker-end
@@ -249,7 +253,7 @@ The properties and items in the following table are used to configure inputs and
 | `RazorGenerate` | Item elements (`.cshtml` files) that are inputs to code generation. |
 | `RazorComponent` | Item elements (`.razor` files) that are inputs to Razor component code generation. |
 | `RazorCompile` | Item elements (`.cs` files) that are inputs to Razor compilation targets. Use this `ItemGroup` to specify additional files to be compiled into the Razor assembly. |
-| `RazorTargetAssemblyAttribute` | Item elements used to code generate attributes for the Razor assembly. For example:  <br>`RazorAssemblyAttribute`<br>`Include="System.Reflection.AssemblyMetadataAttribute"`<br>`_Parameter1="BuildSource" _Parameter2="https://docs.microsoft.com/">` |
+| `RazorTargetAssemblyAttribute` | Item elements used to code generate attributes for the Razor assembly. For example:  <br>`RazorAssemblyAttribute`<br>`Include="System.Reflection.AssemblyMetadataAttribute"`<br>`_Parameter1="BuildSource" _Parameter2="https://learn.microsoft.com/">` |
 | `RazorEmbeddedResource` | Item elements added as embedded resources to the generated Razor assembly. |
 
 | Property | Description |
@@ -257,7 +261,7 @@ The properties and items in the following table are used to configure inputs and
 | `RazorTargetName` | File name (without extension) of the assembly produced by Razor. |
 | `RazorOutputPath` | The Razor output directory. |
 | `RazorCompileToolset` | Used to determine the toolset used to build the Razor assembly. Valid values are `Implicit`, `RazorSDK`, and `PrecompilationTool`. |
-| [EnableDefaultContentItems](https://github.com/aspnet/websdk/blob/rel-2.0.0/src/ProjectSystem/Microsoft.NET.Sdk.Web.ProjectSystem.Targets/netstandard1.0/Microsoft.NET.Sdk.Web.ProjectSystem.targets#L21) | Default is `true`. When `true`, includes *web.config*, `.json`, and `.cshtml` files as content in the project. When referenced via `Microsoft.NET.Sdk.Web`, files under *wwwroot* and config files are also included. |
+| [EnableDefaultContentItems](https://github.com/dotnet/websdk/blob/release/2.1/src/ProjectSystem/Microsoft.NET.Sdk.Web.ProjectSystem.Targets/netstandard1.0/Microsoft.NET.Sdk.Web.ProjectSystem.targets#L21) | Default is `true`. When `true`, includes *web.config*, `.json`, and `.cshtml` files as content in the project. When referenced via `Microsoft.NET.Sdk.Web`, files under *wwwroot* and config files are also included. |
 | `EnableDefaultRazorGenerateItems` | When `true`, includes `.cshtml` files from `Content` items in `RazorGenerate` items. |
 | `GenerateRazorTargetAssemblyInfo` | When `true`, generates a `.cs` file containing attributes specified by `RazorAssemblyAttribute` and includes the file in the compile output. |
 | `EnableDefaultRazorTargetAssemblyInfoAttributes` | When `true`, adds a default set of assembly attributes to `RazorAssemblyAttribute`. |
@@ -303,7 +307,7 @@ Razor's language version is tightly integrated with the version of the runtime t
 
 ## Additional resources
 
-* [Additions to the csproj format for .NET Core](/dotnet/core/tools/csproj)
+* [MSBuild reference for .NET SDK projects](/dotnet/core/tools/csproj)
 * [Common MSBuild project items](/visualstudio/msbuild/common-msbuild-project-items)
 
 :::moniker-end

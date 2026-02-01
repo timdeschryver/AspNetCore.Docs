@@ -1,14 +1,16 @@
 ---
 title: Transform web.config
-author: rick-anderson
+author: tdykstra
 description: Learn how to transform the web.config file when publishing an ASP.NET Core app.
 monikerRange: '>= aspnetcore-2.2'
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
 ms.date: 01/13/2020
 uid: host-and-deploy/iis/transform-webconfig
 ---
 # Transform web.config
+
+[!INCLUDE[](~/includes/not-latest-version.md)]
 
 By [Vijay Ramakrishnan](https://github.com/vijayrkn)
 
@@ -100,7 +102,7 @@ Environment transformations are run third, after [Build configuration](#build-co
 
 Include a *web.{ENVIRONMENT}.config* file for each [environment](xref:fundamentals/environments) requiring a *web.config* transformation.
 
-In the following example, an environment-specific environment variable is set in *web.Production.config* for the Production environment:
+In the following example, an environment-specific environment variable is set in *web.Production.config* for the `Production` environment:
 
 ```xml
 <?xml version="1.0"?>

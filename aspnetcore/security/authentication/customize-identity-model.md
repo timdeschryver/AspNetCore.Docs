@@ -1,16 +1,18 @@
 ---
 title: Identity model customization in ASP.NET Core
+ai-usage: ai-assisted
 author: ajcvickers
 description: This article describes how to customize the underlying Entity Framework Core data model for ASP.NET Core Identity.
-ms.author: avickers
-ms.date: 07/01/2019
+ms.author: wpickett
+ms.date: 11/03/2025
 uid: security/authentication/customize_identity_model
 ---
+<!-- ms.sfi.ropc: t -->
 # Identity model customization in ASP.NET Core
 
 By [Arthur Vickers](https://github.com/ajcvickers)
 
-ASP.NET Core Identity provides a framework for managing and storing user accounts in ASP.NET Core apps. Identity is added to your project when **Individual User Accounts** is selected as the authentication mechanism. By default, Identity makes use of an Entity Framework (EF) Core data model. This article describes how to customize the Identity model.
+ASP.NET Core Identity provides a framework for managing and storing user accounts in ASP.NET Core apps. Identity is added to your project when **Individual Accounts** is selected as the authentication mechanism. By default, Identity makes use of an Entity Framework (EF) Core data model. This article describes how to customize the Identity model.
 
 ## Identity and EF Core Migrations
 
@@ -25,7 +27,7 @@ Before examining the model, it's useful to understand how Identity works with [E
 Use one of the following approaches to add and apply Migrations:
 
 * The **Package Manager Console** (PMC) window if using Visual Studio. For more information, see [EF Core PMC tools](/ef/core/miscellaneous/cli/powershell).
-* The .NET Core CLI if using the command line. For more information, see [EF Core .NET command line tools](/ef/core/miscellaneous/cli/dotnet).
+* The .NET CLI if using the command line. For more information, see [EF Core .NET command line tools](/ef/core/miscellaneous/cli/dotnet).
 * Clicking the **Apply Migrations** button on the error page when the app is run.
 
 ASP.NET Core has a development-time error page handler. The handler can apply migrations when the app is run. Production apps typically generate SQL scripts from the migrations and deploy database changes as part of a controlled app and database deployment.
@@ -37,6 +39,48 @@ When a new app using Identity is created, steps 1 and 2 above have already been 
 * Click the **Apply Migrations** button on the error page when the app is run.
 
 Repeat the preceding steps as changes are made to the model.
+
+> [!IMPORTANT]
+> When Identity options that affect the underlying EF Core model are configured (for example, `options.Stores.MaxLengthForKeys` or `options.Stores.SchemaVersion`), those option values must also be applied at design time for EF Core Migrations to generate the correct model shape. If the EF tooling runs without these options configured, generated migrations may omit the intended changes. For more information, see [efcore#36314](https://github.com/dotnet/efcore/issues/36314).
+To ensure Identity options are applied consistently during migration generation, use one of the following approaches:
+
+* **Set the startup project:** Run `dotnet ef` commands (or PMC commands) with the application project that calls `AddDefaultIdentity` or `AddIdentityCore` set as the startup project. For example, when running commands from a class library project, specify the startup project with `dotnet ef migrations add {MIGRATION_NAME} --startup-project {PATH_TO_APP_PROJECT}`, where the `{MIGRATION_NAME}` placeholder is the migration name and the `{PATH_TO_APP_PROJECT}` placeholder is the path to the app project.
+* **Implement `IDesignTimeDbContextFactory`:** Alternatively, implement an `IDesignTimeDbContextFactory<TContext>` that constructs the context and applies the equivalent Identity option configuration. For an Aspire-friendly solution, see [efcore#35285 (comment)](https://github.com/dotnet/efcore/issues/35285#issuecomment-3161145762).
+
+Example Identity configuration in `Program.cs`:
+
+```csharp
+builder.Services
+    .AddDefaultIdentity<ApplicationUser>(options =>
+    {
+        options.Stores.SchemaVersion = IdentitySchemaVersions.Version2;
+        options.Stores.MaxLengthForKeys = 256;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+```
+
+Example design-time factory:
+
+```csharp
+public class DesignTimeApplicationDbContextFactory
+    : IDesignTimeDbContextFactory<ApplicationDbContext>
+{
+    public ApplicationDbContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlServer("{CONNECTION_STRING}");
+
+        return new ApplicationDbContext(optionsBuilder.Options);
+    }
+}
+```
+
+> [!NOTE]
+> You cannot access `options.Stores.MaxLengthForKeys` directly inside `OnModelCreating` because dependency injection isn’t available at design time. Instead, specify the configured value directly (such as `HasMaxLength(256)`), or use a design-time mechanism to pass settings if needed.
+> For more details, see <xref:security/authentication/identity-configuration>.
+
+> [!TIP]
+> Always verify the resulting model snapshot reflects the intended key lengths or schema version after adding a migration.
 
 ## The Identity model
 
@@ -292,6 +336,8 @@ The context is used to configure the model in two ways:
 
 When overriding `OnModelCreating`, `base.OnModelCreating` should be called first; the overriding configuration should be called next. EF Core generally has a last-one-wins policy for configuration. For example, if the `ToTable` method for an entity type is called first with one table name and then again later with a different table name, the table name in the second call is used.
 
+***NOTE***: If the `DbContext` doesn't derive from `IdentityDbContext`, `AddEntityFrameworkStores` may not infer the correct POCO types for `TUserClaim`, `TUserLogin`, and `TUserToken`. If `AddEntityFrameworkStores` doesn't infer the correct POCO types, a workaround is to directly add the correct types via `services.AddScoped<IUser/RoleStore<TUser>` and `UserStore<...>>`.
+
 ### Custom user data
 
 <!--
@@ -367,7 +413,7 @@ services.AddIdentityCore<TUser>(o =>
 .AddDefaultTokenProviders();
 ```
 
-Identity is provided as a Razor Class Library. For more information, see <xref:security/authentication/scaffold-identity>. Consequently, the preceding code requires a call to <xref:Microsoft.AspNetCore.Identity.IdentityBuilderUIExtensions.AddDefaultUI%2A>. If the Identity scaffolder was used to add Identity files to the project, remove the call to `AddDefaultUI`. For more information, see:
+Identity is provided as a Razor class library. For more information, see <xref:security/authentication/scaffold-identity>. Consequently, the preceding code requires a call to <xref:Microsoft.AspNetCore.Identity.IdentityBuilderUIExtensions.AddDefaultUI%2A>. If the Identity scaffolder was used to add Identity files to the project, remove the call to `AddDefaultUI`. For more information, see:
 
 * [Scaffold Identity](xref:security/authentication/scaffold-identity)
 * [Add, download, and delete custom user data to Identity](xref:security/authentication/add-user-data)
@@ -378,8 +424,8 @@ A change to the PK column's data type after the database has been created is pro
 
 Follow these steps to change the PK type:
 
-1. If the database was created before the PK change, run `Drop-Database` (PMC) or `dotnet ef database drop` (.NET Core CLI) to delete it.
-2. After confirming deletion of the database, remove the initial migration with `Remove-Migration` (PMC) or `dotnet ef migrations remove` (.NET Core CLI).
+1. If the database was created before the PK change, run `Drop-Database` (PMC) or `dotnet ef database drop` (.NET CLI) to delete it.
+2. After confirming deletion of the database, remove the initial migration with `Remove-Migration` (PMC) or `dotnet ef migrations remove` (.NET CLI).
 3. Update the `ApplicationDbContext` class to derive from <xref:Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityDbContext%603>. Specify the new key type for `TKey`. For example, to use a `Guid` key type:
  
    ```csharp
@@ -428,7 +474,7 @@ Follow these steps to change the PK type:
 
    The primary key's data type is inferred by analyzing the <xref:Microsoft.EntityFrameworkCore.DbContext> object.
 
-   Identity is provided as a Razor Class Library. For more information, see <xref:security/authentication/scaffold-identity>. Consequently, the preceding code requires a call to <xref:Microsoft.AspNetCore.Identity.IdentityBuilderUIExtensions.AddDefaultUI%2A>. If the Identity scaffolder was used to add Identity files to the project, remove the call to `AddDefaultUI`.
+   Identity is provided as a Razor class library. For more information, see <xref:security/authentication/scaffold-identity>. Consequently, the preceding code requires a call to <xref:Microsoft.AspNetCore.Identity.IdentityBuilderUIExtensions.AddDefaultUI%2A>. If the Identity scaffolder was used to add Identity files to the project, remove the call to `AddDefaultUI`.
 
 5. If a custom `ApplicationRole` class is being used, update the class to inherit from `IdentityRole<TKey>`. For example:
 
@@ -444,7 +490,7 @@ Follow these steps to change the PK type:
 
    The primary key's data type is inferred by analyzing the <xref:Microsoft.EntityFrameworkCore.DbContext> object.
 
-   Identity is provided as a Razor Class Library. For more information, see <xref:security/authentication/scaffold-identity>. Consequently, the preceding code requires a call to <xref:Microsoft.AspNetCore.Identity.IdentityBuilderUIExtensions.AddDefaultUI%2A>. If the Identity scaffolder was used to add Identity files to the project, remove the call to `AddDefaultUI`.
+   Identity is provided as a Razor class library. For more information, see <xref:security/authentication/scaffold-identity>. Consequently, the preceding code requires a call to <xref:Microsoft.AspNetCore.Identity.IdentityBuilderUIExtensions.AddDefaultUI%2A>. If the Identity scaffolder was used to add Identity files to the project, remove the call to `AddDefaultUI`.
 
 ### Add navigation properties
 
@@ -884,6 +930,8 @@ services
 ```
 
 Refer to the preceding examples for guidance on adding navigation properties to the entity types.
+
+[!INCLUDE [managed-identities](~/includes/managed-identities-conn-strings.md)]
 
 ## Additional resources
 

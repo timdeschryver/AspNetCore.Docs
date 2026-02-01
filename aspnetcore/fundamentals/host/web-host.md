@@ -1,14 +1,16 @@
 ---
 title: ASP.NET Core Web Host
-author: rick-anderson
+author: tdykstra
 description: Learn about Web Host in ASP.NET Core, which is responsible for app startup and lifetime management.
 monikerRange: '>= aspnetcore-3.1'
-ms.author: riande
+ms.author: tdykstra
 ms.custom: mvc
-ms.date: 02/22/2022
+ms.date: 09/06/2024
 uid: fundamentals/host/web-host
 ---
 # ASP.NET Core Web Host
+
+[!INCLUDE[](~/includes/not-latest-version.md)]
 
 :::moniker range=">= aspnetcore-6.0"
 
@@ -51,7 +53,7 @@ The code that calls `CreateDefaultBuilder` is in a method named `CreateWebHostBu
   * Command-line arguments.
 * Configures [logging](xref:fundamentals/logging/index) for console and debug output. Logging includes [log filtering](xref:fundamentals/logging/index#apply-log-filter-rules-in-code) rules specified in a Logging configuration section of an `appsettings.json` or `appsettings.{Environment}.json` file.
 * When running behind IIS with the [ASP.NET Core Module](xref:host-and-deploy/aspnet-core-module), `CreateDefaultBuilder` enables [IIS Integration](xref:host-and-deploy/iis/index), which configures the app's base address and port. IIS Integration also configures the app to [capture startup errors](#capture-startup-errors). For the IIS default options, see <xref:host-and-deploy/iis/index#iis-options>.
-* Sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is Development. For more information, see [Scope validation](#scope-validation).
+* Sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is `Development`. For more information, see [Scope validation](#scope-validation).
 
 The configuration defined by `CreateDefaultBuilder` can be overridden and augmented by <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.ConfigureAppConfiguration%2A>, <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.ConfigureLogging%2A>, and other methods and extension methods of <xref:Microsoft.AspNetCore.Hosting.IWebHostBuilder>. A few examples follow:
 
@@ -215,7 +217,7 @@ WebHost.CreateDefaultBuilder(args)
 
 ### HTTPS Port
 
-Set the HTTPS redirect port. Used in [enforcing HTTPS](xref:security/enforcing-ssl).
+Set the HTTPS port to redirect to if you get a non-HTTPS connection. Used in [enforcing HTTPS](xref:security/enforcing-ssl). This setting doesn't cause the server to listen on the specified port. That is, it's possible to accidentally redirect requests to an unused port.
 
 **Key**: https_port  
 **Type**: *string*  
@@ -226,6 +228,36 @@ Set the HTTPS redirect port. Used in [enforcing HTTPS](xref:security/enforcing-s
 ```csharp
 WebHost.CreateDefaultBuilder(args)
     .UseSetting("https_port", "8080")
+```
+
+### HTTPS Ports
+
+Set the ports to listen on for HTTPS connections.
+
+**Key**: https_ports
+**Type**: *string*  
+**Default**: A default value isn't set.  
+**Set using**: `UseSetting`  
+**Environment variable**: `ASPNETCORE_HTTPS_PORTS`
+
+```csharp
+WebHost.CreateDefaultBuilder(args)
+    .UseSetting("https_ports", "8080")
+```
+
+### HTTP Ports
+
+Set the ports to listen on for HTTP connections.
+
+**Key**: http_ports
+**Type**: *string*  
+**Default**: A default value isn't set.  
+**Set using**: `UseSetting`  
+**Environment variable**: `ASPNETCORE_HTTP_PORTS`
+
+```csharp
+WebHost.CreateDefaultBuilder(args)
+    .UseSetting("http_ports", "8080")
 ```
 
 ### Hosting Startup Exclude Assemblies
@@ -249,13 +281,13 @@ Indicates whether the host should listen on the URLs configured with the `WebHos
 
 **Key**: preferHostingUrls  
 **Type**: *bool* (`true` or `1`)  
-**Default**: true  
+**Default**: false  
 **Set using**: `PreferHostingUrls`  
 **Environment variable**: `ASPNETCORE_PREFERHOSTINGURLS`
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
-    .PreferHostingUrls(false)
+    .PreferHostingUrls(true)
 ```
 
 ### Prevent Hosting Startup
@@ -736,7 +768,7 @@ public class MyClass
 
 ## Scope validation
 
-<xref:Microsoft.AspNetCore.WebHost.CreateDefaultBuilder%2A> sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is Development.
+<xref:Microsoft.AspNetCore.WebHost.CreateDefaultBuilder%2A> sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is `Development`.
 
 When `ValidateScopes` is set to `true`, the default service provider performs checks to verify that:
 
@@ -747,7 +779,7 @@ The root service provider is created when <xref:Microsoft.Extensions.DependencyI
 
 Scoped services are disposed by the container that created them. If a scoped service is created in the root container, the service's lifetime is effectively promoted to singleton because it's only disposed by the root container when app/server is shut down. Validating service scopes catches these situations when `BuildServiceProvider` is called.
 
-To always validate scopes, including in the Production environment, configure the <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions> with <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.UseDefaultServiceProvider%2A> on the host builder:
+To always validate scopes, including in the `Production` environment, configure the <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions> with <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.UseDefaultServiceProvider%2A> on the host builder:
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
@@ -760,7 +792,6 @@ WebHost.CreateDefaultBuilder(args)
 
 * <xref:host-and-deploy/iis/index>
 * <xref:host-and-deploy/linux-nginx>
-* <xref:host-and-deploy/linux-apache>
 * <xref:host-and-deploy/windows-service>
 
 :::moniker-end
@@ -808,7 +839,7 @@ The code that calls `CreateDefaultBuilder` is in a method named `CreateWebHostBu
   * Command-line arguments.
 * Configures [logging](xref:fundamentals/logging/index) for console and debug output. Logging includes [log filtering](xref:fundamentals/logging/index#apply-log-filter-rules-in-code) rules specified in a Logging configuration section of an `appsettings.json` or `appsettings.{Environment}.json` file.
 * When running behind IIS with the [ASP.NET Core Module](xref:host-and-deploy/aspnet-core-module), `CreateDefaultBuilder` enables [IIS Integration](xref:host-and-deploy/iis/index), which configures the app's base address and port. IIS Integration also configures the app to [capture startup errors](#capture-startup-errors). For the IIS default options, see <xref:host-and-deploy/iis/index#iis-options>.
-* Sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is Development. For more information, see [Scope validation](#scope-validation).
+* Sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is `Development`. For more information, see [Scope validation](#scope-validation).
 
 The configuration defined by `CreateDefaultBuilder` can be overridden and augmented by <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.ConfigureAppConfiguration%2A>, <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.ConfigureLogging%2A>, and other methods and extension methods of <xref:Microsoft.AspNetCore.Hosting.IWebHostBuilder>. A few examples follow:
 
@@ -978,7 +1009,7 @@ Set the HTTPS redirect port. Used in [enforcing HTTPS](xref:security/enforcing-s
 **Type**: *string*  
 **Default**: A default value isn't set.  
 **Set using**: `UseSetting`  
-**Environment variable**: `ASPNETCORE_HTTPS_PORT`
+**Environment variable**: `ASPNETCORE_HTTPS_PORTS`
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
@@ -1006,13 +1037,13 @@ Indicates whether the host should listen on the URLs configured with the `WebHos
 
 **Key**: preferHostingUrls  
 **Type**: *bool* (`true` or `1`)  
-**Default**: true  
+**Default**: false  
 **Set using**: `PreferHostingUrls`  
 **Environment variable**: `ASPNETCORE_PREFERHOSTINGURLS`
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
-    .PreferHostingUrls(false)
+    .PreferHostingUrls(true)
 ```
 
 ### Prevent Hosting Startup
@@ -1493,7 +1524,7 @@ public class MyClass
 
 ## Scope validation
 
-<xref:Microsoft.AspNetCore.WebHost.CreateDefaultBuilder%2A> sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is Development.
+<xref:Microsoft.AspNetCore.WebHost.CreateDefaultBuilder%2A> sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is `Development`.
 
 When `ValidateScopes` is set to `true`, the default service provider performs checks to verify that:
 
@@ -1504,7 +1535,7 @@ The root service provider is created when <xref:Microsoft.Extensions.DependencyI
 
 Scoped services are disposed by the container that created them. If a scoped service is created in the root container, the service's lifetime is effectively promoted to singleton because it's only disposed by the root container when app/server is shut down. Validating service scopes catches these situations when `BuildServiceProvider` is called.
 
-To always validate scopes, including in the Production environment, configure the <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions> with <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.UseDefaultServiceProvider%2A> on the host builder:
+To always validate scopes, including in the `Production` environment, configure the <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions> with <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.UseDefaultServiceProvider%2A> on the host builder:
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
@@ -1517,7 +1548,6 @@ WebHost.CreateDefaultBuilder(args)
 
 * <xref:host-and-deploy/iis/index>
 * <xref:host-and-deploy/linux-nginx>
-* <xref:host-and-deploy/linux-apache>
 * <xref:host-and-deploy/windows-service>
 
 :::moniker-end
@@ -1565,7 +1595,7 @@ The code that calls `CreateDefaultBuilder` is in a method named `CreateWebHostBu
   * Command-line arguments.
 * Configures [logging](xref:fundamentals/logging/index) for console and debug output. Logging includes [log filtering](xref:fundamentals/logging/index#apply-log-filter-rules-in-code) rules specified in a Logging configuration section of an `appsettings.json` or `appsettings.{Environment}.json` file.
 * When running behind IIS with the [ASP.NET Core Module](xref:host-and-deploy/aspnet-core-module), `CreateDefaultBuilder` enables [IIS Integration](xref:host-and-deploy/iis/index), which configures the app's base address and port. IIS Integration also configures the app to [capture startup errors](#capture-startup-errors). For the IIS default options, see <xref:host-and-deploy/iis/index#iis-options>.
-* Sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is Development. For more information, see [Scope validation](#scope-validation).
+* Sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is `Development`. For more information, see [Scope validation](#scope-validation).
 
 The configuration defined by `CreateDefaultBuilder` can be overridden and augmented by <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.ConfigureAppConfiguration%2A>, <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.ConfigureLogging%2A>, and other methods and extension methods of <xref:Microsoft.AspNetCore.Hosting.IWebHostBuilder>. A few examples follow:
 
@@ -1735,7 +1765,7 @@ Set the HTTPS redirect port. Used in [enforcing HTTPS](xref:security/enforcing-s
 **Type**: *string*  
 **Default**: A default value isn't set.  
 **Set using**: `UseSetting`  
-**Environment variable**: `ASPNETCORE_HTTPS_PORT`
+**Environment variable**: `ASPNETCORE_HTTPS_PORTS`
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
@@ -1763,13 +1793,13 @@ Indicates whether the host should listen on the URLs configured with the `WebHos
 
 **Key**: preferHostingUrls  
 **Type**: *bool* (`true` or `1`)  
-**Default**: true  
+**Default**: false  
 **Set using**: `PreferHostingUrls`  
 **Environment variable**: `ASPNETCORE_PREFERHOSTINGURLS`
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
-    .PreferHostingUrls(false)
+    .PreferHostingUrls(true)
 ```
 
 ### Prevent Hosting Startup
@@ -2250,7 +2280,7 @@ public class MyClass
 
 ## Scope validation
 
-<xref:Microsoft.AspNetCore.WebHost.CreateDefaultBuilder%2A> sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is Development.
+<xref:Microsoft.AspNetCore.WebHost.CreateDefaultBuilder%2A> sets <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions.ValidateScopes%2A?displayProperty=nameWithType> to `true` if the app's environment is `Development`.
 
 When `ValidateScopes` is set to `true`, the default service provider performs checks to verify that:
 
@@ -2261,7 +2291,7 @@ The root service provider is created when <xref:Microsoft.Extensions.DependencyI
 
 Scoped services are disposed by the container that created them. If a scoped service is created in the root container, the service's lifetime is effectively promoted to singleton because it's only disposed by the root container when app/server is shut down. Validating service scopes catches these situations when `BuildServiceProvider` is called.
 
-To always validate scopes, including in the Production environment, configure the <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions> with <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.UseDefaultServiceProvider%2A> on the host builder:
+To always validate scopes, including in the `Production` environment, configure the <xref:Microsoft.Extensions.DependencyInjection.ServiceProviderOptions> with <xref:Microsoft.AspNetCore.Hosting.WebHostBuilderExtensions.UseDefaultServiceProvider%2A> on the host builder:
 
 ```csharp
 WebHost.CreateDefaultBuilder(args)
@@ -2274,7 +2304,6 @@ WebHost.CreateDefaultBuilder(args)
 
 * <xref:host-and-deploy/iis/index>
 * <xref:host-and-deploy/linux-nginx>
-* <xref:host-and-deploy/linux-apache>
 * <xref:host-and-deploy/windows-service>
 
 :::moniker-end
